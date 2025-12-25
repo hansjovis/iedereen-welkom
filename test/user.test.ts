@@ -4,6 +4,8 @@ import { UserRepository } from "repositories/UserRepository";
 import { UserService } from "services/UserService";
 import { EmailAddress } from "values/EmailAddress";
 import { PlainPassword, HashedPassword } from "authorization/PasswordCredentials";
+import { TOTPCode, TOTPConfiguration } from "authorization/TOTPCredentials";
+import { totp } from "otplib";
 
 class MockUserRepository implements UserRepository {
     private readonly users: Map<string, User> = new Map();
@@ -76,6 +78,28 @@ describe("A user", () => {
         user.activate([HashedPassword.create("some-password")]);
 
         const loggedIn = userService.login(email, [new PlainPassword("some-password")]);
+
+        expect(loggedIn).toEqual(true);
+    });
+
+    it("can login using multiple valid credentials (2FA)", () => {
+        const email = new EmailAddress("hans-christiaan@hansjovis.net");
+        const user: User = userService.register({
+            userName: "hansjovis",
+            email,
+        });
+
+        const secret = "some-secret";
+
+        user.activate([
+            HashedPassword.create("some-password"),
+            new TOTPConfiguration(secret),
+        ]);
+
+        const firstFactor = new PlainPassword("some-password");
+        const secondFactor = new TOTPCode(totp.generate(secret));
+
+        const loggedIn = userService.login(email, [firstFactor, secondFactor]);
 
         expect(loggedIn).toEqual(true);
     });

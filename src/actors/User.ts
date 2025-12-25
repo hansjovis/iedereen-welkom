@@ -40,17 +40,24 @@ export class User extends Actor {
         return this._credentials;
     }
 
-    getProtectedCredentials(credentials: UnsafeCredentials): ProtectedCredentials | undefined {
-        return this._credentials.find(it => it.type.equals(credentials.type));
-    }
-
-    validate(credentials: UnsafeCredentials): boolean {
-        const protectedCredentials = this.getProtectedCredentials(credentials);
-        if (protectedCredentials === undefined) {
+    validateEnteredCredentials(enteredCredentials: UnsafeCredentials[]): boolean {
+        if (enteredCredentials.length !== this.credentials.length) {
+            // We expect the same amount of entered credentials as configured factors (e.g. password + TOTP).
             return false;
         }
+        for (const credential of this.credentials) {
+            const entered = enteredCredentials.find(it => it.type.equals(credential.type));
+            if (entered === undefined) {
+                // We have configured a factor, but no entered credentials are of that type.
+                return false;
+            }
+            if (credential.check(entered) === false) {
+                // Entered credentials are invalid.
+                return false;
+            }
+        }
 
-        return protectedCredentials.check(credentials);
+        return true;
     }
 
     serialize(): NodeObject {

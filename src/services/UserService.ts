@@ -51,7 +51,7 @@ export class UserService {
             throw new Unauthorized();
         }
 
-        if(credentials.some(credential => user.validate(credential) === false)) {
+        if(user.validateEnteredCredentials(credentials) === false) {
             throw new Unauthorized();
         };
 
