@@ -3,7 +3,7 @@ import { Identifiable } from "common/Identifiable";
 import { Activity } from "activities/common/Activity";
 import { ActivityStreamsNS } from "namespaces";
 import { JSONLDSerializable } from "common/JSONLDSerializable";
-import { JsonLdDocument, NodeObject } from "jsonld";
+import { NodeObject } from "jsonld";
 
 export class Inbox implements Identifiable, JSONLDSerializable {
     readonly type = new URI(ActivityStreamsNS, "OrderedCollection");
@@ -23,6 +23,8 @@ export class Inbox implements Identifiable, JSONLDSerializable {
             "@context": ActivityStreamsNS.url,
             "@type": this.type.suffix,
             "@id": this.id.long,
+            "totalItems": this.contents.length,
+            "orderedItems": this.contents.map(it => it.serialize()),
         }
     }
 }
