@@ -14,6 +14,19 @@ export class URI {
         return this.namespace.url + this.suffix;
     }
 
+    /**
+     * Creates a new URI by appending the suffix to the current URI.
+     * 
+     * E.g. "https://example.net/some-url"
+     * `uri.append("/suffix")` => "https://example.net/some-url/suffix"
+     *
+     * @param suffix The suffix to append to this URI.
+     * @returns The new URI, with the suffix appended.
+     */
+    append(suffix: string): URI {
+        return new URI(this.namespace, this.suffix + suffix);
+    }
+
     toString() {
         return this.long;
     }

@@ -1,12 +1,12 @@
 import { createId, URI } from "common/URI";
-import { Object } from "objects/common/Object";
+import { Object } from "objects/Object";
 import { ActivityStreamsNS, BaseNS } from "namespaces";
-import { Activity } from "./common/Activity";
-import { Actor } from "actors/common/Actor";
+import { Activity } from "./Activity";
+import { Actor } from "actors/Actor";
 import { NodeObject } from "jsonld";
 
 export class CreateActivity extends Activity {
-    readonly type = new URI(ActivityStreamsNS, "Create");
+    readonly type = [new URI(ActivityStreamsNS, "Create")];
 
     protected createId(): URI {
         return createId(BaseNS, "activities/create");
@@ -15,7 +15,7 @@ export class CreateActivity extends Activity {
     serialize(): NodeObject {
         return {
             ...super.serialize(),
-            "@type": this.type.long,
+            "@type": this.type.map(it => it.long),
             "@id": this.id.long,
         };
     }
@@ -29,22 +29,27 @@ export class CreateActivityBuilder {
 
     setActor(actor: Actor) {
         this.actor = actor;
+        return this;
     }
 
     setObject(object: Object) {
         this.object = object;
+        return this;
     }
 
     addRecipient(recipient: Actor) {
         this.to.push(recipient);
+        return this;
     }
 
     setRecipients(recipients: Actor[]) {
         this.to = recipients;
+        return this;
     }
 
     addCC(recipient: Actor) {
         this.cc.push(recipient);
+        return this;
     }
 
     create() {

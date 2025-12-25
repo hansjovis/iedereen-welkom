@@ -1,10 +1,10 @@
 import { URI } from "common/URI";
 import { Object } from "objects/common/Object";
 import { Identifiable } from "common/Identifiable";
-import { Actor } from "actors/common/Actor";
-import { ActivityStreamsNS, BaseNS } from "namespaces";
+import { Actor } from "actors/Actor";
+import { ActivityStreamsNS } from "namespaces";
 import { JSONLDSerializable } from "common/JSONLDSerializable";
-import { JsonLdDocument, NodeObject } from "jsonld";
+import { NodeObject } from "jsonld";
 
 export type ActivityProps = {
     id?: URI,
@@ -16,7 +16,7 @@ export type ActivityProps = {
 
 export abstract class Activity implements Identifiable, JSONLDSerializable {
     readonly id: URI;
-    readonly type: URI;
+    readonly type: URI[];
     readonly actor: Actor;
     readonly to: Actor[];
     readonly cc?: Actor[];
@@ -37,7 +37,7 @@ export abstract class Activity implements Identifiable, JSONLDSerializable {
     serialize(): NodeObject {
         return {
             "@context": ActivityStreamsNS.url,
-            "@type": this.type.suffix,
+            "@type": this.type.map(it => it.long),
             "@id": this.id.long,
             "actor": this.actor.id.long,
             "to": this.to.map(it => it.id.long),

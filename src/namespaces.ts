@@ -7,5 +7,10 @@ export const ActivityStreamsNS = new Namespace(
 
 export const BaseNS = new Namespace(
     "base",
-    "https://example.net/objects/",
+    "https://example.net/",
+);
+
+export const IedereenWelkomNS = new Namespace(
+    "iew",
+    "https://iedereen-welkom.nl/ns/",
 );

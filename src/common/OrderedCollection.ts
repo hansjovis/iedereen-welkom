@@ -5,7 +5,7 @@ import { URI } from "./URI";
 import { NodeObject } from "jsonld";
 
 export class OrderedCollection<T extends JSONLDSerializable> implements Identifiable, JSONLDSerializable {
-    readonly type: URI = new URI(ActivityStreamsNS, "OrderedCollection");
+    readonly type = [new URI(ActivityStreamsNS, "OrderedCollection")];
     readonly id: URI;
 
     private _items: T[] = [];
@@ -29,7 +29,7 @@ export class OrderedCollection<T extends JSONLDSerializable> implements Identifi
     serialize(): NodeObject {
         return {
             "@context": ActivityStreamsNS.url,
-            "@type": this.type.suffix,
+            "@type": this.type.map(it => it.suffix),
             "@id": this.id.long,
             "totalItems": this._items.length,
             "orderedItems": this._items.map(it => it.serialize()),
