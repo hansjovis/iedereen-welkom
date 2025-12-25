@@ -1,14 +1,9 @@
-import { URI } from "common/URI";
 import { User } from "../actors/User";
 import { EmailAddress } from "values/EmailAddress";
 import { Unauthorized } from "exceptions/Unauthorized";
 import { UserRepository } from "repositories/UserRepository";
 import { NotFound } from "exceptions/NotFound";
-
-export interface Credentials {
-    readonly type: URI;
-    check(user: User): boolean;
-}
+import { UnsafeCredentials, ProtectedCredentials } from "authorization/Credentials";
 
 export interface Registration {
     userName: string,
@@ -33,7 +28,7 @@ export class UserService {
         return user;
     }
 
-    activate(emailAddress: EmailAddress, credentials: Credentials[]) {
+    activate(emailAddress: EmailAddress, credentials: ProtectedCredentials[]) {
         const user = this.userRepository.retrieveByEmail(emailAddress);
 
         if (user === undefined) {
@@ -45,14 +40,18 @@ export class UserService {
         this.userRepository.save(user);
     }
 
-    login(emailAddress: EmailAddress, credentials: Credentials[]) {
+    login(emailAddress: EmailAddress, credentials: UnsafeCredentials[]) {
         const user: User|undefined = this.userRepository.retrieveByEmail(emailAddress);
 
         if (user === undefined) {
             throw new Unauthorized();
         }
 
-        if(credentials.some(credential => credential.check(user) === false)) {
+        if (user.isActivated === false) {
+            throw new Unauthorized();
+        }
+
+        if(credentials.some(credential => user.validate(credential) === false)) {
             throw new Unauthorized();
         };
 

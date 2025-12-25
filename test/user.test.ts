@@ -1,33 +1,30 @@
 import { User } from "actors/User";
-import { URI } from "common/URI";
-import { IedereenWelkomNS } from "namespaces";
+import { Unauthorized } from "exceptions/Unauthorized";
 import { UserRepository } from "repositories/UserRepository";
-import { Credentials, UserService } from "services/UserService";
+import { UserService } from "services/UserService";
 import { EmailAddress } from "values/EmailAddress";
-
-class MockCredentials implements Credentials {
-    readonly type: URI = new URI(IedereenWelkomNS, "credentials/mock");
-    check(user: User): boolean {
-        return true;
-    }
-}
+import { PlainPassword, HashedPassword } from "authorization/PasswordCredentials";
 
 class MockUserRepository implements UserRepository {
-    private readonly users: Map<EmailAddress, User> = new Map();
+    private readonly users: Map<string, User> = new Map();
 
     save(user: User): void {
-        this.users.set(user.email, user);
+        this.users.set(user.email.toString(), user);
     }
     
     retrieveByEmail(email: EmailAddress): User | undefined {
-        return this.users.get(email);
+        return this.users.get(email.toString());
     }
 }
 
 describe("A user", () => {
-    it("can register themselves", () => {
-        const userService = new UserService(new MockUserRepository());
+    let userService: UserService;
 
+    beforeAll(() => {
+        userService = new UserService(new MockUserRepository());
+    });
+
+    it("can register themselves", () => {
         const user: User = userService.register({
             userName: "hansjovis",
             email: new EmailAddress("hans-christiaan@hansjovis.net"),
@@ -37,5 +34,49 @@ describe("A user", () => {
 
         expect(user.outbox.items).toHaveLength(0);
         expect(user.inbox.items).toHaveLength(0);
+
+        expect(user.isActivated).toBe(false);
+    });
+
+    it("cannot login when the user account hasn't been activated", () => {
+        const email = new EmailAddress("hans-christiaan@hansjovis.net");
+        const user: User = userService.register({
+            userName: "hansjovis",
+            email,
+        });
+
+        expect(user.isActivated).toBe(false);
+
+        const login = () => userService.login(email, [new HashedPassword("some-random-string")]);
+
+        expect(login).toThrow(Unauthorized);
+    });
+
+    it("cannot login when entering invalid credentials", () => {
+        const email = new EmailAddress("hans-christiaan@hansjovis.net");
+        const user: User = userService.register({
+            userName: "hansjovis",
+            email,
+        });
+
+        user.activate([HashedPassword.create("some-password")]);
+
+        const login = () => userService.login(email, [new PlainPassword("some-other-invalid-password")]);
+
+        expect(login).toThrow(Unauthorized);
+    });
+
+    it("can login using valid credentials", () => {
+        const email = new EmailAddress("hans-christiaan@hansjovis.net");
+        const user: User = userService.register({
+            userName: "hansjovis",
+            email,
+        });
+
+        user.activate([HashedPassword.create("some-password")]);
+
+        const loggedIn = userService.login(email, [new PlainPassword("some-password")]);
+
+        expect(loggedIn).toEqual(true);
     });
 });

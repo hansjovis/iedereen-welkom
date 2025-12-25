@@ -4,7 +4,7 @@ import { BaseNS, IedereenWelkomNS } from "namespaces";
 import { Actor } from "./Actor";
 import { URI } from "common/URI";
 import { EmailAddress } from "values/EmailAddress";
-import { Credentials } from "services/UserService";
+import { UnsafeCredentials, ProtectedCredentials } from "authorization/Credentials";
 
 export type UserProps = {
     id?: URI,
@@ -18,7 +18,8 @@ export type UserProps = {
 export class User extends Actor {
     readonly userName: string;
     readonly email: EmailAddress;
-    private credentials: Credentials[];
+
+    private _credentials: ProtectedCredentials[];
 
     constructor(props: UserProps) {
         const id = props.id ?? new URI(BaseNS, `users/${encodeURIComponent(props.name)}`);
@@ -32,7 +33,24 @@ export class User extends Actor {
     }
 
     get isActivated(): boolean {
-        return !!this.credentials;
+        return !!this._credentials;
+    }
+
+    get credentials(): ProtectedCredentials[] {
+        return this._credentials;
+    }
+
+    getProtectedCredentials(credentials: UnsafeCredentials): ProtectedCredentials | undefined {
+        return this._credentials.find(it => it.type.equals(credentials.type));
+    }
+
+    validate(credentials: UnsafeCredentials): boolean {
+        const protectedCredentials = this.getProtectedCredentials(credentials);
+        if (protectedCredentials === undefined) {
+            return false;
+        }
+
+        return protectedCredentials.check(credentials);
     }
 
     serialize(): NodeObject {
@@ -41,7 +59,7 @@ export class User extends Actor {
         }
     }
 
-    activate(credentials: Credentials[]) {
-        this.credentials = credentials;
+    activate(credentials: ProtectedCredentials[]) {
+        this._credentials = credentials;
     }
 }

@@ -27,6 +27,10 @@ export class URI {
         return new URI(this.namespace, this.suffix + suffix);
     }
 
+    equals(uri: URI): boolean {
+        return this.long === uri.long;
+    }
+
     toString() {
         return this.long;
     }
