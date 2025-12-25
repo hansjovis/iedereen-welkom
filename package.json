@@ -1,0 +1,21 @@
+{
+  "name": "iedereen-welkom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jsonld": "^1.5.15",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "jsonld": "^9.0.0"
+  }
+}
