@@ -38,6 +38,20 @@ describe("A user", () => {
         expect(user.inbox.items).toHaveLength(0);
 
         expect(user.isActivated).toBe(false);
+
+        expect(user.serialize()).toEqual({
+            "@context": "https://www.w3.org/ns/activitystreams#",
+            "@id": "https://example.net/users/hansjovis",
+            "@type": [
+                "https://www.w3.org/ns/activitystreams#Actor",
+                "https://iedereen-welkom.nl/ns/User"
+            ],
+            name: "hansjovis",
+            summary: "Hello, my name is hansjovis!",
+            icon: [],
+            inbox: "https://example.net/users/hansjovis/inbox",
+            outbox: "https://example.net/users/hansjovis/outbox"
+        });
     });
 
     it("cannot login when the user account hasn't been activated", () => {
@@ -52,6 +66,18 @@ describe("A user", () => {
         const login = () => userService.login(email, [new HashedPassword("some-random-string")]);
 
         expect(login).toThrow(Unauthorized);
+    });
+
+    it("can activate their account", () => {
+        const email = new EmailAddress("hans-christiaan@hansjovis.net");
+        const user: User = userService.register({
+            userName: "hansjovis",
+            email,
+        });
+
+        expect(user.isActivated).toBe(false);
+        user.activate([HashedPassword.create("some-password")]);
+        expect(user.isActivated).toBe(true);
     });
 
     it("cannot login when entering invalid credentials", () => {
@@ -89,14 +115,15 @@ describe("A user", () => {
             email,
         });
 
+        const password = "some-password";
         const secret = "some-secret";
 
         user.activate([
-            HashedPassword.create("some-password"),
+            HashedPassword.create(password),
             new TOTPConfiguration(secret),
         ]);
 
-        const firstFactor = new PlainPassword("some-password");
+        const firstFactor = new PlainPassword(password);
         const secondFactor = new TOTPCode(totp.generate(secret));
 
         const loggedIn = userService.login(email, [firstFactor, secondFactor]);
