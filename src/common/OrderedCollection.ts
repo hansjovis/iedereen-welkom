@@ -23,13 +23,18 @@ export class OrderedCollectionIterator<T extends JSONLDSerializable> implements 
     }
 }
 
+export type CompareFunction<T> = (item1: T, item2: T) => -1 | 0 | 1;
+
 export class OrderedCollection<T extends JSONLDSerializable> implements JSONLDSerializable, Iterable<T> {
     readonly type = [new URI(ActivityStreamsNS, "OrderedCollection")];
     readonly id?: URI;
 
+    readonly compareFunction: CompareFunction<T>;
+
     private _items: T[] = [];
 
-    constructor(id?: URI) {
+    constructor(id?: URI, compare?: CompareFunction<T>) {
+        this.compareFunction = compare;
         this.id = id;
     }
 
@@ -51,6 +56,7 @@ export class OrderedCollection<T extends JSONLDSerializable> implements JSONLDSe
 
     add(...items: T[]) {
         this._items.push(...items);
+        this._items.sort(this.compareFunction);
     }
 
     clear(): void {
