@@ -1,3 +1,5 @@
+import { totp } from "otplib";
+
 import { User } from "actors/User";
 import { Unauthorized } from "exceptions/Unauthorized";
 import { UserRepository } from "repositories/UserRepository";
@@ -5,7 +7,6 @@ import { UserService } from "services/UserService";
 import { EmailAddress, InvalidEmailAddress } from "values/EmailAddress";
 import { PlainPassword, HashedPassword, UnsafePassword } from "authorization/PasswordCredentials";
 import { InvalidTOTPCode, TOTPCode, TOTPConfiguration } from "authorization/TOTPCredentials";
-import { totp } from "otplib";
 import { NotFound } from "exceptions/NotFound";
 
 class MockUserRepository implements UserRepository {

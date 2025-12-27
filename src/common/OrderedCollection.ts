@@ -4,13 +4,32 @@ import { JSONLDSerializable } from "./JSONLDSerializable";
 import { URI } from "./URI";
 import { NodeObject } from "jsonld";
 
-export class OrderedCollection<T extends JSONLDSerializable> implements Identifiable, JSONLDSerializable {
+export class OrderedCollectionIterator<T extends JSONLDSerializable> implements Iterator<T> {
+    private index: number = 0;
+
+    constructor(private readonly collection: OrderedCollection<T>) {}
+
+    next(): IteratorResult<T, any> {
+        const val = this.collection.get(this.index);
+
+        let done = false;
+        if (this.index === this.collection.size) {
+            done = true;
+        }
+                
+        this.index += 1;
+
+        return { value: val, done };
+    }
+}
+
+export class OrderedCollection<T extends JSONLDSerializable> implements JSONLDSerializable, Iterable<T> {
     readonly type = [new URI(ActivityStreamsNS, "OrderedCollection")];
-    readonly id: URI;
+    readonly id?: URI;
 
     private _items: T[] = [];
 
-    constructor(id: URI) {
+    constructor(id?: URI) {
         this.id = id;
     }
 
@@ -18,11 +37,23 @@ export class OrderedCollection<T extends JSONLDSerializable> implements Identifi
         return this._items;
     }
 
-    add(item: T) {
-        this._items.push(item);
+    get size(): number {
+        return this._items.length;
     }
 
-    reset() {
+    [Symbol.iterator](): Iterator<T, any, any> {
+        return new OrderedCollectionIterator(this);
+    }
+
+    get(index: number): T {
+        return this._items[index];
+    }
+
+    add(...items: T[]) {
+        this._items.push(...items);
+    }
+
+    clear(): void {
         this._items = [];
     }
 
