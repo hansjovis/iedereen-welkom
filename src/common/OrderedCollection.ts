@@ -1,5 +1,4 @@
 import { ActivityStreamsNS } from "namespaces";
-import { Identifiable } from "./Identifiable";
 import { JSONLDSerializable } from "./JSONLDSerializable";
 import { URI } from "./URI";
 import { NodeObject } from "jsonld";
@@ -9,7 +8,7 @@ export class OrderedCollectionIterator<T extends JSONLDSerializable> implements 
 
     constructor(private readonly collection: OrderedCollection<T>) {}
 
-    next(): IteratorResult<T, any> {
+    next(): IteratorResult<T> {
         const val = this.collection.get(this.index);
 
         let done = false;
@@ -46,7 +45,7 @@ export class OrderedCollection<T extends JSONLDSerializable> implements JSONLDSe
         return this._items.length;
     }
 
-    [Symbol.iterator](): Iterator<T, any, any> {
+    [Symbol.iterator](): Iterator<T> {
         return new OrderedCollectionIterator(this);
     }
 

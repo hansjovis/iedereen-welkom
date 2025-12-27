@@ -6,17 +6,21 @@
   "type": "module",
   "scripts": {
     "test": "jest --coverage",
+    "lint": "eslint",
     "build": "tsc --project build.tsconfig.json"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/jest": "^30.0.0",
     "@types/jsonld": "^1.5.15",
+    "globals": "^16.5.0",
     "jest": "^30.2.0",
     "ts-jest": "^29.4.6",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.50.1"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

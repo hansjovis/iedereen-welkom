@@ -4,7 +4,7 @@ import { Inbox } from "./Inbox";
 import { Outbox } from "./Outbox";
 import { JSONLDSerializable } from "common/JSONLDSerializable";
 import { NodeObject } from "jsonld";
-import { ActivityStreamsNS, BaseNS } from "namespaces";
+import { ActivityStreamsNS } from "namespaces";
 
 export type ActorProps = {
     id: URI,
