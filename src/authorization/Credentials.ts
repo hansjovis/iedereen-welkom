@@ -5,7 +5,7 @@ import { URI } from "common/URI";
  * for example hashed passwords.
  */
 export interface ProtectedCredentials {
-    readonly type: URI;
+    readonly forType: URI;
     check(credentials: UnsafeCredentials): boolean;
 }
 

@@ -1,5 +1,5 @@
 import { URI } from "common/URI";
-import { Object } from "objects/common/Object";
+import { Object } from "objects/Object";
 import { Identifiable } from "common/Identifiable";
 import { Actor } from "actors/Actor";
 import { ActivityStreamsNS } from "namespaces";

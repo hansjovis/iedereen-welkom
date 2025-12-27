@@ -2,9 +2,9 @@ import { User } from "actors/User";
 import { Unauthorized } from "exceptions/Unauthorized";
 import { UserRepository } from "repositories/UserRepository";
 import { UserService } from "services/UserService";
-import { EmailAddress } from "values/EmailAddress";
+import { EmailAddress, InvalidEmailAddress } from "values/EmailAddress";
 import { PlainPassword, HashedPassword, UnsafePassword } from "authorization/PasswordCredentials";
-import { TOTPCode, TOTPConfiguration } from "authorization/TOTPCredentials";
+import { InvalidTOTPCode, TOTPCode, TOTPConfiguration } from "authorization/TOTPCredentials";
 import { totp } from "otplib";
 import { NotFound } from "exceptions/NotFound";
 
@@ -64,7 +64,7 @@ describe("A user", () => {
 
         expect(user.isActivated).toBe(false);
 
-        const login = () => userService.login(email, [new HashedPassword("some-random-string")]);
+        const login = () => userService.login(email, [new PlainPassword("some-password")]);
 
         expect(login).toThrow(Unauthorized);
     });
@@ -87,10 +87,24 @@ describe("A user", () => {
         expect(activate).toThrow(NotFound);
     });
 
-    it("cannot login when entering an invalid email address", () => {
+    it("cannot activate their account using an unsafe password", () => {
+        const email = new EmailAddress("hans-christiaan@hansjovis.net");
+        const activate = () => userService.activate(email, [HashedPassword.create("unsafe")]);
+        expect(activate).toThrow(UnsafePassword);
+    });
+
+    it("cannot login when entering an email address for a non-existing account", () => {
         const email = new EmailAddress("not-existing@hansjovis.net");
         const login = () => userService.login(email, [new PlainPassword("some-password")]);
         expect(login).toThrow(Unauthorized);
+    });
+
+    it("cannot login using an invalid email address", () => {
+        const login = () => userService.login(
+            new EmailAddress("invalid-email-address"), 
+            [new PlainPassword("some-password")]
+        );
+        expect(login).toThrow(InvalidEmailAddress);
     });
 
     it("cannot login when entering invalid credentials", () => {
@@ -142,5 +156,25 @@ describe("A user", () => {
         const loggedIn = userService.login(email, [firstFactor, secondFactor]);
 
         expect(loggedIn).toEqual(true);
+    });
+
+    it("cannot login using an invalid TOTP code", () => {
+        const email = new EmailAddress("hans-christiaan@hansjovis.net");
+        const user: User = userService.register({
+            userName: "hansjovis",
+            email,
+        });
+
+        const password = "some-password";
+        const secret = "some-secret";
+
+        user.activate([
+            HashedPassword.create(password),
+            new TOTPConfiguration(secret),
+        ]);
+
+        const login = () => userService.login(email, [new PlainPassword(password), new TOTPCode("1234")]);
+
+        expect(login).toThrow(InvalidTOTPCode);
     });
 });

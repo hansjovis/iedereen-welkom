@@ -13,7 +13,7 @@ export class PlainPassword implements UnsafeCredentials {
 }
 
 export class HashedPassword implements ProtectedCredentials {
-    type: URI = new URI(IedereenWelkomNS, "credentials/password");
+    forType: URI = new URI(IedereenWelkomNS, "credentials/password");
 
     constructor(private readonly hashedPassword: string) {}
 

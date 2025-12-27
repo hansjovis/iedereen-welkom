@@ -46,7 +46,7 @@ export class User extends Actor {
             return false;
         }
         for (const credential of this.credentials) {
-            const entered = enteredCredentials.find(it => it.type.equals(credential.type));
+            const entered = enteredCredentials.find(it => it.type.equals(credential.forType));
             if (entered === undefined) {
                 // We have configured a factor, but no entered credentials are of that type.
                 return false;

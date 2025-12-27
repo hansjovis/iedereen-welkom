@@ -7,7 +7,7 @@ import { IedereenWelkomNS } from "namespaces";
 export class InvalidTOTPCode extends Error {}
 
 export class TOTPConfiguration implements ProtectedCredentials {
-    type: URI = new URI(IedereenWelkomNS, "credentials/totp");
+    forType: URI = new URI(IedereenWelkomNS, "credentials/totp");
 
     constructor(private readonly secret: string) {}
 
