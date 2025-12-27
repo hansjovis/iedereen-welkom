@@ -3,9 +3,10 @@ import { Unauthorized } from "exceptions/Unauthorized";
 import { UserRepository } from "repositories/UserRepository";
 import { UserService } from "services/UserService";
 import { EmailAddress } from "values/EmailAddress";
-import { PlainPassword, HashedPassword } from "authorization/PasswordCredentials";
+import { PlainPassword, HashedPassword, UnsafePassword } from "authorization/PasswordCredentials";
 import { TOTPCode, TOTPConfiguration } from "authorization/TOTPCredentials";
 import { totp } from "otplib";
+import { NotFound } from "exceptions/NotFound";
 
 class MockUserRepository implements UserRepository {
     private readonly users: Map<string, User> = new Map();
@@ -76,8 +77,20 @@ describe("A user", () => {
         });
 
         expect(user.isActivated).toBe(false);
-        user.activate([HashedPassword.create("some-password")]);
+        userService.activate(email, [HashedPassword.create("some-password")]);
         expect(user.isActivated).toBe(true);
+    });
+
+    it("cannot activate their account when the user cannot be found", () => {
+        const email = new EmailAddress("not-existing@hansjovis.net");
+        const activate = () => userService.activate(email, [HashedPassword.create("some-password")]);
+        expect(activate).toThrow(NotFound);
+    });
+
+    it("cannot login when entering an invalid email address", () => {
+        const email = new EmailAddress("not-existing@hansjovis.net");
+        const login = () => userService.login(email, [new PlainPassword("some-password")]);
+        expect(login).toThrow(Unauthorized);
     });
 
     it("cannot login when entering invalid credentials", () => {
