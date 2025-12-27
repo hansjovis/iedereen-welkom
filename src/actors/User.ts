@@ -19,10 +19,10 @@ export class User extends Actor {
     readonly userName: string;
     readonly email: EmailAddress;
 
-    private _credentials: ProtectedCredentials[];
+    private _credentials: ProtectedCredentials[] = [];
 
     constructor(props: UserProps) {
-        const id = props.id ?? new URI(BaseNS, `users/${encodeURIComponent(props.name)}`);
+        const id = props.id ?? new URI(BaseNS, `users/${encodeURIComponent(props.userName)}`);
 
         super({ id, ...props });
 
@@ -33,7 +33,7 @@ export class User extends Actor {
     }
 
     get isActivated(): boolean {
-        return !!this._credentials;
+        return this._credentials.length > 0;
     }
 
     get credentials(): ProtectedCredentials[] {
