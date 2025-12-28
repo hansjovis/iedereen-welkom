@@ -40,24 +40,25 @@ export class User extends Actor {
         return this._credentials;
     }
 
+    private validateSingleCredential(storedCredentials: ProtectedCredentials, enteredCredentials: UnsafeCredentials[]) {
+        const entered = enteredCredentials.find(it => it.type.equals(storedCredentials.forType));
+        if (entered === undefined) {
+            // We have configured a factor, but no entered credentials are of that type.
+            return false;
+        }
+        if (storedCredentials.check(entered) === false) {
+            // Entered credentials are invalid.
+            return false;
+        }
+        return true;
+    }
+
     validateEnteredCredentials(enteredCredentials: UnsafeCredentials[]): boolean {
         if (enteredCredentials.length !== this.credentials.length) {
             // We expect the same amount of entered credentials as configured factors (e.g. password + TOTP).
             return false;
         }
-        for (const credential of this.credentials) {
-            const entered = enteredCredentials.find(it => it.type.equals(credential.forType));
-            if (entered === undefined) {
-                // We have configured a factor, but no entered credentials are of that type.
-                return false;
-            }
-            if (credential.check(entered) === false) {
-                // Entered credentials are invalid.
-                return false;
-            }
-        }
-
-        return true;
+        return this._credentials.every(it => this.validateSingleCredential(it, enteredCredentials));
     }
 
     serialize(): NodeObject {

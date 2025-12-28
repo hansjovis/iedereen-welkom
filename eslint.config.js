@@ -7,7 +7,11 @@ export default defineConfig([
         basePath: "src/",
         files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
         plugins: { js }, 
-        extends: ["js/recommended"]
+        extends: ["js/recommended"],
+        rules: {
+            complexity: ["warn", 4],
+            "max-depth": ["warn", 1]
+        }
     },
-    tseslint.configs.recommended,
+    tseslint.configs.recommended
 ]);
