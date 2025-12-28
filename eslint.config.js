@@ -4,13 +4,15 @@ import { defineConfig } from "eslint/config";
 
 export default defineConfig([
     {
-        basePath: "src/",
+        basePath: "./src/",
         files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
         plugins: { js }, 
         extends: ["js/recommended"],
         rules: {
             complexity: ["warn", 4],
-            "max-depth": ["warn", 1]
+            "max-depth": ["error", 2],
+            "max-statements": ["error", 12],
+            "max-params": ["error", 2],
         }
     },
     tseslint.configs.recommended
