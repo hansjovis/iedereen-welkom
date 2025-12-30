@@ -19,7 +19,7 @@ export class User extends Actor {
     readonly userName: string;
     readonly email: EmailAddress;
 
-    private _credentials: ProtectedCredentials[] = [];
+    private credentials: ProtectedCredentials[] = [];
 
     constructor(props: UserProps) {
         const id = props.id ?? new URI(BaseNS, `users/${encodeURIComponent(props.userName)}`);
@@ -33,11 +33,7 @@ export class User extends Actor {
     }
 
     get isActivated(): boolean {
-        return this._credentials.length > 0;
-    }
-
-    get credentials(): ProtectedCredentials[] {
-        return this._credentials;
+        return this.credentials.length > 0;
     }
 
     private validateSingleCredential(storedCredentials: ProtectedCredentials, enteredCredentials: UnsafeCredentials[]) {
@@ -54,11 +50,7 @@ export class User extends Actor {
     }
 
     validateEnteredCredentials(enteredCredentials: UnsafeCredentials[]): boolean {
-        if (enteredCredentials.length !== this.credentials.length) {
-            // We expect the same amount of entered credentials as configured factors (e.g. password + TOTP).
-            return false;
-        }
-        return this._credentials.every(it => this.validateSingleCredential(it, enteredCredentials));
+        return this.credentials.every(it => this.validateSingleCredential(it, enteredCredentials));
     }
 
     serialize(): NodeObject {
@@ -68,6 +60,6 @@ export class User extends Actor {
     }
 
     activate(credentials: ProtectedCredentials[]) {
-        this._credentials = credentials;
+        this.credentials = credentials;
     }
 }
