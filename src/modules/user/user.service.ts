@@ -1,9 +1,9 @@
-import { User } from "../actors/User";
-import { EmailAddress } from "values/EmailAddress";
-import { Unauthorized } from "exceptions/Unauthorized";
-import { UserRepository } from "repositories/UserRepository";
-import { NotFound } from "exceptions/NotFound";
+// Dependencies from other modules
+import { Unauthorized, NotFound } from "exceptions";
 import { UnsafeCredentials, ProtectedCredentials } from "authorization/Credentials";
+// Local dependencies
+import { User, EmailAddress } from "./domain";
+import { UserRepository } from "./user.repository";
 
 export interface Registration {
     userName: string,
@@ -28,7 +28,7 @@ export class UserService {
         return user;
     }
 
-    activate(emailAddress: EmailAddress, credentials: ProtectedCredentials[]) {
+    activate(emailAddress: EmailAddress, credentials: ProtectedCredentials[]): User {
         const user = this.userRepository.retrieveByEmail(emailAddress);
 
         if (user === undefined) {
@@ -38,9 +38,11 @@ export class UserService {
         user.activate(credentials);
 
         this.userRepository.save(user);
+
+        return user;
     }
 
-    login(emailAddress: EmailAddress, credentials: UnsafeCredentials[]) {
+    login(emailAddress: EmailAddress, credentials: UnsafeCredentials[]): boolean {
         const user: User|undefined = this.userRepository.retrieveByEmail(emailAddress);
 
         if (user === undefined) {

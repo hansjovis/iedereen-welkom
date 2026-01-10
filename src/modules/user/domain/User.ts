@@ -1,10 +1,12 @@
+// Outside dependencies
 import { NodeObject } from "jsonld";
-
+// Dependencies from other modules
 import { BaseNS, IedereenWelkomNS } from "namespaces";
-import { Actor } from "./Actor";
+import { Actor } from "actors/Actor";
 import { URI } from "common/URI";
-import { EmailAddress } from "values/EmailAddress";
 import { UnsafeCredentials, ProtectedCredentials } from "authorization/Credentials";
+// Local dependencies
+import { EmailAddress } from "./EmailAddress";
 
 export type UserProps = {
     id?: URI,
@@ -51,12 +53,6 @@ export class User extends Actor {
 
     validateEnteredCredentials(enteredCredentials: UnsafeCredentials[]): boolean {
         return this.credentials.every(it => this.validateSingleCredential(it, enteredCredentials));
-    }
-
-    serialize(): NodeObject {
-        return {
-            ...super.serialize(),
-        }
     }
 
     activate(credentials: ProtectedCredentials[]) {

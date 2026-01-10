@@ -1,5 +1,5 @@
-import { User } from "actors/User";
-import { EmailAddress } from "values/EmailAddress";
+import { User } from "./domain/User";
+import { EmailAddress } from "./domain/EmailAddress";
 
 export interface UserRepository {
     save(user: User): void;

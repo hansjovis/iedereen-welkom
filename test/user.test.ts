@@ -1,10 +1,10 @@
 import { totp } from "otplib";
 
-import { User } from "actors/User";
+import { User } from "modules/user/domain/User";
 import { Unauthorized } from "exceptions/Unauthorized";
-import { UserRepository } from "repositories/UserRepository";
-import { UserService } from "services/UserService";
-import { EmailAddress, InvalidEmailAddress } from "values/EmailAddress";
+import { UserRepository } from "modules/user/user.repository";
+import { UserService } from "modules/user/user.service";
+import { EmailAddress, InvalidEmailAddress } from "modules/user/domain/EmailAddress";
 import { PlainPassword, HashedPassword, UnsafePassword } from "authorization/PasswordCredentials";
 import { InvalidTOTPCode, TOTPCode, TOTPConfiguration } from "authorization/TOTPCredentials";
 import { NotFound } from "exceptions/NotFound";
