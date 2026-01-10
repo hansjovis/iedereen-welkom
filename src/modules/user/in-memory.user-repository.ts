@@ -1,6 +1,7 @@
 import { User, EmailAddress } from "./domain";
+import { UserRepository } from "./user.repository";
 
-export class InMemoryUserRepository {
+export class InMemoryUserRepository implements UserRepository {
     private readonly users: Map<string, User> = new Map();
 
     save(user: User): void {

@@ -1,4 +1,4 @@
-import { URI } from "common/URI";
+import { URI } from "common";
 
 /**
  * Protected credentials are credentials that can be stored safely,

@@ -1,6 +1,6 @@
 import { totp } from "otplib";
 
-import { URI } from "common/URI";
+import { URI } from "common";
 import { ProtectedCredentials, UnsafeCredentials } from "./Credentials";
 import { IedereenWelkomNS } from "namespaces";
 

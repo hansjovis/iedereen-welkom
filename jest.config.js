@@ -8,5 +8,6 @@ export default {
   transform: {
     ...tsJestTransformCfg,
   },
-  moduleDirectories: [ "node_modules", "src" ]
+  moduleDirectories: [ "node_modules", "src" ],
+  moduleFileExtensions: [ "js", "ts" ],
 };

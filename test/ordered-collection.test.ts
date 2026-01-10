@@ -1,7 +1,6 @@
-import { JSONLDSerializable } from "common/JSONLDSerializable";
-import { OrderedCollection } from "common/OrderedCollection";
-import { URI } from "common/URI";
 import { NodeObject } from "jsonld";
+
+import { JSONLDSerializable, URI, OrderedCollection } from "common";
 import { BaseNS } from "namespaces";
 
 class Item implements JSONLDSerializable {

@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 
-import { URI } from "common/URI";
+import { URI } from "common";
 import { UnsafeCredentials, ProtectedCredentials } from "./Credentials";
 import { IedereenWelkomNS } from "namespaces";
 

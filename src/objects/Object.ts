@@ -1,9 +1,9 @@
-import { Identifiable } from "common/Identifiable";
-import { URI } from "common/URI";
-import { Source } from "./Source";
-import { JSONLDSerializable } from "common/JSONLDSerializable";
 import { NodeObject } from "jsonld";
+
 import { ActivityStreamsNS } from "namespaces";
+import { Identifiable, URI, JSONLDSerializable } from "common";
+
+import { Source } from "./Source";
 
 export abstract class Object implements Identifiable, JSONLDSerializable {
     readonly type = [new URI(ActivityStreamsNS, "Object")];

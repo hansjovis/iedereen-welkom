@@ -1,11 +1,8 @@
-// Outside dependencies
-import { NodeObject } from "jsonld";
-// Dependencies from other modules
 import { BaseNS, IedereenWelkomNS } from "namespaces";
 import { Actor } from "actors/Actor";
 import { URI } from "common/URI";
 import { UnsafeCredentials, ProtectedCredentials } from "authorization/Credentials";
-// Local dependencies
+
 import { EmailAddress } from "./EmailAddress";
 
 export type UserProps = {

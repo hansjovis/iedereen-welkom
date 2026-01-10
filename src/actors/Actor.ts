@@ -1,10 +1,10 @@
-import { Identifiable } from "common/Identifiable";
-import { URI } from "common/URI";
+import { NodeObject } from "jsonld";
+
+import { Identifiable, URI, JSONLDSerializable } from "common";
+import { ActivityStreamsNS } from "namespaces";
+
 import { Inbox } from "./Inbox";
 import { Outbox } from "./Outbox";
-import { JSONLDSerializable } from "common/JSONLDSerializable";
-import { NodeObject } from "jsonld";
-import { ActivityStreamsNS } from "namespaces";
 
 export type ActorProps = {
     id: URI,

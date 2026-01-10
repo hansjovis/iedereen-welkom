@@ -1,12 +1,4 @@
 {
-    "compilerOptions": {
-        "target": "es2020",
-        "moduleResolution": "node",
-        "baseUrl": "./src",
-        "outDir": "dist",
-        "esModuleInterop": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
-    },
+    "extends": "./tsconfig.json",
     "include": ["src"]
 }
