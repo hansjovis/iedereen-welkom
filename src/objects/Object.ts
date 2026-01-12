@@ -5,7 +5,7 @@ import { Identifiable, URI, JSONLDSerializable } from "common";
 
 import { Source } from "./Source";
 
-export abstract class Object implements Identifiable, JSONLDSerializable {
+export abstract class ASObject implements Identifiable, JSONLDSerializable {
     readonly type = [new URI(ActivityStreamsNS, "Object")];
     readonly id: URI;
     readonly content?: string;

@@ -2,13 +2,12 @@
   "name": "iedereen-welkom",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "type": "module",
+  "main": "./dist/app.js",
   "scripts": {
     "test": "jest --coverage",
     "lint": "eslint",
     "build": "tsc --project build.tsconfig.json",
-    "dev": "node ./dist/app.js"
+    "dev": "NODE_PATH=./dist node ./dist/app.js"
   },
   "keywords": [],
   "author": "",

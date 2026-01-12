@@ -1,5 +1,5 @@
 import { createId, URI } from "common/URI";
-import { Object } from "objects/Object";
+import { ASObject } from "objects/Object";
 import { ActivityStreamsNS, BaseNS } from "namespaces";
 import { Activity } from "./Activity";
 import { Actor } from "actors/Actor";
@@ -32,7 +32,7 @@ export class CreateActivityBuilder {
         return this;
     }
 
-    setObject(object: Object) {
+    setObject(object: ASObject) {
         this.object = object;
         return this;
     }

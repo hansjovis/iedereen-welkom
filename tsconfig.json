@@ -1,13 +1,13 @@
 {
     "compilerOptions": {
         "target": "esnext",
-        "moduleResolution": "node",
+        "module": "commonjs",
         "baseUrl": "./src",
         "outDir": "dist",
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "jsx": "react"
+        "jsx": "react",
     },
     "include": ["src", "test"]
 }

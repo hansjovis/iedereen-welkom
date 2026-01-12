@@ -3,17 +3,22 @@ import React, { ReactNode } from "react";
 type Props = {
     title: string,
     description: string,
-    children: ReactNode[],
+    children?: ReactNode[],
 }
 
-export default function MainLayout(props: Props) {
+export default function MainLayout({
+    title, 
+    description, 
+    children = []
+}: Props) {
     return <html>
         <head>
-            <title>{ props.title }</title>
-            <meta name="description" content={ props.description }/>
+            <title>{ title }</title>
+            <meta name="description" content={ description }/>
         </head>
         <body>
-            { ...props.children }
+            <h1>Hello World!</h1>
+            { ...children }
         </body>
     </html>
     ;

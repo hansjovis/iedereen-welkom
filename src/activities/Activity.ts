@@ -1,5 +1,5 @@
 import { URI } from "common/URI";
-import { Object } from "objects/Object";
+import { ASObject } from "objects/Object";
 import { Identifiable } from "common/Identifiable";
 import { Actor } from "actors/Actor";
 import { ActivityStreamsNS } from "namespaces";
@@ -20,7 +20,7 @@ export abstract class Activity implements Identifiable, JSONLDSerializable {
     readonly actor: Actor;
     readonly to: Actor[];
     readonly cc?: Actor[];
-    readonly object: Object;
+    readonly object: ASObject;
 
     constructor(props: ActivityProps) {
         this.id = props.id || this.createId();
