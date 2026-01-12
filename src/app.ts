@@ -1,4 +1,5 @@
 import express from "express";
+import React from "react";
 
 import { InMemoryUserRepository } from "modules/user/in-memory.user-repository";
 import { register } from "modules/user/routes";
@@ -14,15 +15,12 @@ const userService = new UserService(userRepository);
 app.post("/users", register(userService));
 
 app.get("/", async (_, res) => {
-    await render(
-        res, 
-        MainLayout, 
-        { 
-            title: "Hello World!", 
-            description: "This is a webpage.",
-            children: [],
-        }
-    );
+    const element = React.createElement(MainLayout, { 
+        title: "Hello World!", 
+        description: "This is a webpage.",
+        children: [],
+    });
+    await render(res, element);
 });
 
 app.listen(3000, () => {

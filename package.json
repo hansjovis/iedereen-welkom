@@ -5,7 +5,7 @@
   "main": "./dist/app.js",
   "scripts": {
     "test": "jest --coverage",
-    "lint": "eslint",
+    "lint": "eslint ./src",
     "build": "tsc --project build.tsconfig.json",
     "dev": "NODE_PATH=./dist node ./dist/app.js"
   },
@@ -31,7 +31,6 @@
     "jsonld": "^9.0.0",
     "otplib": "^12.0.1",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "reflect-metadata": "^0.2.2"
+    "react-dom": "^19.2.3"
   }
 }

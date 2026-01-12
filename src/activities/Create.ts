@@ -23,7 +23,7 @@ export class CreateActivity extends Activity {
 
 export class CreateActivityBuilder {
     actor?: Actor;
-    object?: Object;
+    object?: ASObject;
     to?: Actor[] = [];
     cc?: Actor[] = [];
 

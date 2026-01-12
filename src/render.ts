@@ -1,5 +1,5 @@
 import { Response } from "express";
-import React, { FunctionComponent } from "react";
+import { ReactElement } from "react";
 import { renderToReadableStream } from "react-dom/server";
 
 async function writeToResponse(reader: ReadableStreamDefaultReader, response: Response): Promise<void> {
@@ -12,15 +12,13 @@ async function writeToResponse(reader: ReadableStreamDefaultReader, response: Re
 
 export async function render<Props>(
     response: Response, 
-    Component: FunctionComponent<Props>, 
-    props: Props
+    element: ReactElement<Props>,
 ): Promise<void> {
     try {
-        const component = React.createElement(Component, props)
-        const stream = await renderToReadableStream(component);
+        const stream = await renderToReadableStream(element);
         await writeToResponse(stream.getReader(), response);
     } catch (error) {
-        console.error(`Error rendering ${Component.name}.`, error);
+        console.error(`Error rendering ${element.type}.`, error);
         response.status(500).send(error.message);
     }
 

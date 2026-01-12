@@ -11,7 +11,7 @@ export type ActivityProps = {
     actor: Actor,
     to: Actor[],
     cc?: Actor[],
-    object: Object,
+    object: ASObject,
 }
 
 export abstract class Activity implements Identifiable, JSONLDSerializable {
