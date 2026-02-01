@@ -12,7 +12,7 @@ module.exports = defineConfig([
             complexity: ["warn", 4],
             "max-depth": ["error", 2],
             "max-statements": ["error", 12],
-            "max-params": ["error", 2],
+            "max-params": ["error", 3],
         }
     },
     tseslint.configs.recommended

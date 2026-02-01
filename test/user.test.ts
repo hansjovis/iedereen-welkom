@@ -1,84 +1,43 @@
 import { totp } from "otplib";
 
-import { User } from "modules/user/domain/User";
-import { Unauthorized } from "exceptions/Unauthorized";
-import { UserRepository } from "modules/user/user.repository";
 import { UserService } from "modules/user/user.service";
-import { EmailAddress, InvalidEmailAddress } from "modules/user/domain/EmailAddress";
+import { EmailAddress, InvalidEmailAddress, Registration } from "modules/user/domain";
 import { PlainPassword, HashedPassword, UnsafePassword } from "authorization/PasswordCredentials";
 import { InvalidTOTPCode, TOTPCode, TOTPConfiguration } from "authorization/TOTPCredentials";
 import { NotFound } from "exceptions/NotFound";
+import { Unauthorized } from "exceptions/Unauthorized";
 
-class MockUserRepository implements UserRepository {
-    private readonly users: Map<string, User> = new Map();
-
-    save(user: User): void {
-        this.users.set(user.email.toString(), user);
-    }
-    
-    retrieveByEmail(email: EmailAddress): User | undefined {
-        return this.users.get(email.toString());
-    }
-}
+// Test utils
+import { MockUserRepository } from "./_mocks/mock.user-repository";
+import { MockRegistrationRepository } from "./_mocks/mock.registration-repository";
 
 describe("A user", () => {
     let userService: UserService;
 
     beforeAll(() => {
-        userService = new UserService(new MockUserRepository());
+        userService = new UserService(
+            new MockUserRepository(),
+            new MockRegistrationRepository(),
+        );
     });
 
     it("can register themselves", () => {
-        const user: User = userService.register({
-            userName: "hansjovis",
-            email: new EmailAddress("hans-christiaan@hansjovis.net"),
-        });
-
-        expect(user.userName).toEqual("hansjovis");
-
-        expect(user.outbox.items).toHaveLength(0);
-        expect(user.inbox.items).toHaveLength(0);
-
-        expect(user.isActivated).toBe(false);
-
-        expect(user.serialize()).toEqual({
-            "@context": "https://www.w3.org/ns/activitystreams#",
-            "@id": "https://example.net/users/hansjovis",
-            "@type": [
-                "https://www.w3.org/ns/activitystreams#Actor",
-                "https://iedereen-welkom.nl/ns/User"
-            ],
-            name: "hansjovis",
-            summary: "Hello, my name is hansjovis!",
-            icon: [],
-            inbox: "https://example.net/users/hansjovis/inbox",
-            outbox: "https://example.net/users/hansjovis/outbox"
-        });
+        const email = new EmailAddress("hans-christiaan@hansjovis.net");
+        const registration: Registration = userService.register(email, "hansjovis");
+        expect(registration.email).toEqual(email);
     });
 
     it("cannot login when the user account hasn't been activated", () => {
         const email = new EmailAddress("hans-christiaan@hansjovis.net");
-        const user: User = userService.register({
-            userName: "hansjovis",
-            email,
-        });
-
-        expect(user.isActivated).toBe(false);
-
         const login = () => userService.login(email, [new PlainPassword("some-password")]);
-
         expect(login).toThrow(Unauthorized);
     });
 
     it("can activate their account", () => {
         const email = new EmailAddress("hans-christiaan@hansjovis.net");
-        const user: User = userService.register({
-            userName: "hansjovis",
-            email,
-        });
+        const registration = userService.register(email, "hansjovis");
 
-        expect(user.isActivated).toBe(false);
-        userService.activate(email, [HashedPassword.create("some-password")]);
+        const user = userService.activate(registration.id, [HashedPassword.create("some-password")]);
         expect(user.isActivated).toBe(true);
     });
 
@@ -110,12 +69,9 @@ describe("A user", () => {
 
     it("cannot login when entering invalid credentials", () => {
         const email = new EmailAddress("hans-christiaan@hansjovis.net");
-        const user: User = userService.register({
-            userName: "hansjovis",
-            email,
-        });
+        const registration = userService.register(email, "hansjovis");
 
-        user.activate([HashedPassword.create("some-password")]);
+        userService.activate(registration.id, [HashedPassword.create("some-password")]);
 
         const login = () => userService.login(email, [new PlainPassword("some-other-invalid-password")]);
 
@@ -124,12 +80,9 @@ describe("A user", () => {
 
     it("can login using valid credentials", () => {
         const email = new EmailAddress("hans-christiaan@hansjovis.net");
-        const user: User = userService.register({
-            userName: "hansjovis",
-            email,
-        });
+        const registration = userService.register(email, "hansjovis");
 
-        user.activate([HashedPassword.create("some-password")]);
+        userService.activate(registration.id, [HashedPassword.create("some-password")]);
 
         const loggedIn = userService.login(email, [new PlainPassword("some-password")]);
 
@@ -138,18 +91,17 @@ describe("A user", () => {
 
     it("can login using multiple valid credentials (2FA)", () => {
         const email = new EmailAddress("hans-christiaan@hansjovis.net");
-        const user: User = userService.register({
-            userName: "hansjovis",
-            email,
-        });
+        const registration = userService.register(email, "hansjovis");
 
         const password = "some-password";
         const secret = "some-secret";
 
-        user.activate([
-            HashedPassword.create(password),
-            new TOTPConfiguration(secret),
-        ]);
+        userService.activate(
+            registration.id, [
+                HashedPassword.create(password),
+                new TOTPConfiguration(secret),
+            ]
+        );
 
         const firstFactor = new PlainPassword(password);
         const secondFactor = new TOTPCode(totp.generate(secret));
@@ -161,18 +113,17 @@ describe("A user", () => {
 
     it("cannot login using an invalid TOTP code", () => {
         const email = new EmailAddress("hans-christiaan@hansjovis.net");
-        const user: User = userService.register({
-            userName: "hansjovis",
-            email,
-        });
+        const registration = userService.register(email, "hansjovis");
 
         const password = "some-password";
         const secret = "some-secret";
 
-        user.activate([
-            HashedPassword.create(password),
-            new TOTPConfiguration(secret),
-        ]);
+        userService.activate(
+            registration.id, [
+                HashedPassword.create(password),
+                new TOTPConfiguration(secret),
+            ]
+        );
 
         const login = () => userService.login(email, [new PlainPassword(password), new TOTPCode("1234")]);
 

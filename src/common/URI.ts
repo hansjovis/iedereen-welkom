@@ -17,8 +17,10 @@ export class URI {
     /**
      * Creates a new URI by appending the suffix to the current URI.
      * 
-     * E.g. "https://example.net/some-url"
-     * `uri.append("/suffix")` => "https://example.net/some-url/suffix"
+     * @example
+     * const namespace = new Namespace("ex", "https://example.org");
+     * const uri = new URI(namespace, "/some-url");
+     * uri.append("/suffix"); // https://example.net/some-url/suffix
      *
      * @param suffix The suffix to append to this URI.
      * @returns The new URI, with the suffix appended.

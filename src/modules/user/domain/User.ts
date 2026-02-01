@@ -6,7 +6,7 @@ import { UnsafeCredentials, ProtectedCredentials } from "authorization/Credentia
 import { EmailAddress } from "./EmailAddress";
 
 export type UserProps = {
-    id?: URI,
+    id: URI,
     userName: string,
     email: EmailAddress,
     name: string,
@@ -21,14 +21,19 @@ export class User extends Actor {
     private credentials: ProtectedCredentials[] = [];
 
     constructor(props: UserProps) {
-        const id = props.id ?? new URI(BaseNS, `users/${encodeURIComponent(props.userName)}`);
-
-        super({ id, ...props });
+        super(props);
 
         this.type.push(new URI(IedereenWelkomNS, "User"));
 
         this.userName = props.userName;
         this.email = props.email;
+    }
+
+    static create(email: EmailAddress, userName: string): User {
+        const id = new URI(BaseNS, `users/${encodeURIComponent(userName)}`);
+        const name = userName;
+        const summary = `Hallo, mijn naam is ${name}`;
+        return new User({ id, userName, name, summary, email });
     }
 
     get isActivated(): boolean {

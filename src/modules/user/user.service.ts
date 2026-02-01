@@ -2,38 +2,30 @@
 import { Unauthorized, NotFound } from "exceptions";
 import { UnsafeCredentials, ProtectedCredentials } from "authorization/Credentials";
 // Local dependencies
-import { User, EmailAddress } from "./domain";
+import { User, EmailAddress, Registration } from "./domain";
 import { UserRepository } from "./user.repository";
-
-export interface Registration {
-    userName: string,
-    email: EmailAddress,
-}
+import { RegistrationRepository } from "./registration.repository";
+import { UUID } from "./domain/UUID";
 
 export class UserService {
     constructor(
         private readonly userRepository: UserRepository,
+        private readonly registrationRepository: RegistrationRepository,
     ) {}
 
-    register(registration: Registration): User {
-        const user = new User({
-            userName: registration.userName,
-            name: registration.userName,
-            email: registration.email,
-            summary: `Hello, my name is ${registration.userName}!`
-        });
-
-        this.userRepository.save(user);
-
-        return user;
+    register(email: EmailAddress, userName: string): Registration {
+        const registration = Registration.create(email, userName);
+        this.registrationRepository.save(registration);
+        return registration;
     }
 
-    activate(emailAddress: EmailAddress, credentials: ProtectedCredentials[]): User {
-        const user = this.userRepository.retrieveByEmail(emailAddress);
-
-        if (user === undefined) {
-            throw new NotFound(`User with email address "${emailAddress}" could not be found.`);
+    activate(id: UUID, credentials: ProtectedCredentials[]): User {
+        const registration = this.registrationRepository.retrieve(id);
+        if (registration === undefined) {
+            throw new NotFound(`Registration with id "${id}" could not be found.`);
         }
+
+        const user = User.create(registration.email, registration.userName);
 
         user.activate(credentials);
 
