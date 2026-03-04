@@ -1,54 +1,36 @@
 // Dependencies from other modules
-import { Unauthorized, NotFound } from "exceptions";
-import { UnsafeCredentials, ProtectedCredentials } from "authorization/Credentials";
+import { NotFound, Unauthorized } from "exceptions";
+import { UnsafeCredentials, ProtectedCredentials } from "modules/auth";
 // Local dependencies
-import { User, EmailAddress, Registration } from "./domain";
+import { User, EmailAddress } from "./domain";
 import { UserRepository } from "./user.repository";
-import { RegistrationRepository } from "./registration.repository";
 import { UUID } from "./domain/UUID";
 
 export class UserService {
     constructor(
         private readonly userRepository: UserRepository,
-        private readonly registrationRepository: RegistrationRepository,
     ) {}
 
-    register(email: EmailAddress, userName: string): Registration {
-        const registration = Registration.create(email, userName);
-        this.registrationRepository.save(registration);
-        return registration;
-    }
-
-    activate(id: UUID, credentials: ProtectedCredentials[]): User {
-        const registration = this.registrationRepository.retrieve(id);
-        if (registration === undefined) {
-            throw new NotFound(`Registration with id "${id}" could not be found.`);
-        }
-
-        const user = User.create(registration.email, registration.userName);
-
-        user.activate(credentials);
-
+    register(email: EmailAddress, userName: string): User {
+        const user = User.create(email, userName);
         this.userRepository.save(user);
-
         return user;
     }
 
-    login(emailAddress: EmailAddress, credentials: UnsafeCredentials[]): boolean {
-        const user: User|undefined = this.userRepository.retrieveByEmail(emailAddress);
-
+    activate(userID: UUID, credentials: ProtectedCredentials[]): User {
+        const user = this.userRepository.retrieveById(userID);
         if (user === undefined) {
-            throw new Unauthorized();
+            throw new NotFound(`User with id ${userID} could not be found.`);
         }
+        user.activate(credentials);
+        return user;
+    }
 
-        if (user.isActivated === false) {
-            throw new Unauthorized();
-        }
-
-        if(user.validateEnteredCredentials(credentials) === false) {
+    async login(user: User, credentials: UnsafeCredentials[]): Promise<User> {
+        if(await user.validateEnteredCredentials(credentials) === false) {
             throw new Unauthorized();
         };
 
-        return true;
+        return user;
     }
 }

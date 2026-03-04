@@ -6,7 +6,7 @@ import { URI } from "common";
  */
 export interface ProtectedCredentials {
     readonly forType: URI;
-    check(credentials: UnsafeCredentials): boolean;
+    check(credentials: UnsafeCredentials): Promise<boolean>;
 }
 
 /**

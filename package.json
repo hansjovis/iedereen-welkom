@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "./dist/app.js",
+  "type": "module",
   "scripts": {
     "test": "jest --coverage",
     "lint": "eslint ./src",
@@ -29,7 +30,7 @@
     "bcryptjs": "^3.0.3",
     "express": "^5.2.1",
     "jsonld": "^9.0.0",
-    "otplib": "^12.0.1",
+    "otplib": "^13.0.3",
     "react": "^19.2.3",
     "react-dom": "^19.2.3"
   }

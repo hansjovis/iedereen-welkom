@@ -7,6 +7,7 @@ export class InvalidStatusCode extends Error {
 export class StatusCode {
     static readonly Unauthorized = new StatusCode(403, "Unauthorized");
     static readonly NotFound = new StatusCode(404, "Not Found");
+    static readonly BadRequest = new StatusCode(400, "Bad Request");
 
     constructor(
         public readonly code: number, 

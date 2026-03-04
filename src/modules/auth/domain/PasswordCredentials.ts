@@ -27,7 +27,7 @@ export class HashedPassword implements ProtectedCredentials {
         return new HashedPassword(bcrypt.hashSync(password, salt));
     }
 
-    check(credentials: PlainPassword): boolean {
+    async check(credentials: PlainPassword): Promise<boolean> {
         return bcrypt.compareSync(credentials.plainPassword, this.hashedPassword);
     }
 }

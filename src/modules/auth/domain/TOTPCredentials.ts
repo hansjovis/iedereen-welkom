@@ -1,4 +1,4 @@
-import { totp } from "otplib";
+import { verify } from "otplib";
 
 import { URI } from "common";
 import { ProtectedCredentials, UnsafeCredentials } from "./Credentials";
@@ -11,8 +11,12 @@ export class TOTPConfiguration implements ProtectedCredentials {
 
     constructor(private readonly secret: string) {}
 
-    check(code: TOTPCode): boolean {
-        return totp.check(code.value, this.secret);
+    async check(code: TOTPCode): Promise<boolean> {
+        const result = await verify({
+            token: code.value, 
+            secret: this.secret
+        });
+        return result.valid;
     }
 }
 

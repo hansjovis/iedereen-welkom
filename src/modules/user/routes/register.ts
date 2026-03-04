@@ -8,7 +8,7 @@ type Params = {
     userName: string,
 }
 
-function parseRequestBody(body: Record<string, string>): Params {
+function parseRequestBody(body: Record<string, unknown>): Params {
     try {
         const email = new EmailAddress(body.email);
         const userName = body.userName;
@@ -21,7 +21,7 @@ function parseRequestBody(body: Record<string, string>): Params {
 export function register(service: UserService): Handler {
     return (req, res) => {
         const { email, userName } = parseRequestBody(req.body);
-        service.register({ email, userName });
+        service.register(email, userName);
         res.status(201).send("User registered");
     }
 }
