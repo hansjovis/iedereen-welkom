@@ -8,20 +8,15 @@ import { EmailAddress, InvalidEmailAddress, User } from "../dist/modules/user/do
 import { PlainPassword, HashedPassword, UnsafePassword, InvalidTOTPCode, TOTPCode, TOTPConfiguration } from "../dist/modules/auth/index.js"
 import { NotFound } from "../dist/exceptions/NotFound.js"
 import { Unauthorized } from "../dist/exceptions/Unauthorized.js"
-import { ActivateAccountEmail } from "../dist/modules/user/emails/activate-account.email.js"
-import { NotActivated } from "../dist/exceptions/index.js"
 
 // Test utils
-import { MockUserRepository } from "./_utils/dist/mock.user-repository.js"
-import { MockEmailService } from "./_utils/dist/mock.email-service.js"
+import { MockUserRepository } from "./_mocks/mock.user-repository.ts"
 
 describe("A user", () => {
     let userService: UserService;
     let userRepository: MockUserRepository;
-    let emailService: MockEmailService;
 
     before(() => {
-        emailService = new MockEmailService();
         userRepository = new MockUserRepository();
         userService = new UserService(
             userRepository

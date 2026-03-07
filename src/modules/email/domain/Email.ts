@@ -1,10 +1,10 @@
-import { EmailAddressee } from "./EmailAddressee.js";
+import { EmailAddress } from "./EmailAddress.js";
 
 export type Headers = {
-    from: EmailAddressee,
-    to: EmailAddressee | EmailAddressee[],
-    cc?: EmailAddressee[],
-    bcc?: EmailAddressee[],
+    from: EmailAddress,
+    to: EmailAddress | EmailAddress[],
+    cc?: EmailAddress[],
+    bcc?: EmailAddress[],
 };
 
 export abstract class Email {

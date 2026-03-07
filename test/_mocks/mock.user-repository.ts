@@ -1,6 +1,6 @@
-import { UserRepository } from "../../../dist/modules/user/user.repository.js";
-import { User, EmailAddress } from "../../../dist/modules/user/domain/index.js";
-import { UUID } from "../../../dist/modules/user/domain/UUID.js";
+import type { UserRepository } from "../../dist/modules/user/user.repository.js";
+import { User, EmailAddress } from "../../dist/modules/user/domain/index.js";
+import { UUID } from "../../dist/modules/user/domain/UUID.js";
 
 export class MockUserRepository implements UserRepository {
     private readonly users: Map<string, User> = new Map();

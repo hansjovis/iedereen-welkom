@@ -1,11 +1,11 @@
-import { Email, EmailAddressee } from "../../../modules/email/domain/index.js";
+import { Email, EmailAddress } from "../../../modules/email/domain/index.js";
 import { LoginCode } from "../../../modules/auth/index.js";
 
-import { EmailAddress, User } from "../domain/index.js";
+import { User } from "../domain/index.js";
 
-const noReplyAddress = new EmailAddressee(
+const noReplyAddress = new EmailAddress(
     "Iedereen Welkom", 
-    new EmailAddress("no-reply@example.com")
+    "no-reply@example.com",
 );
 
 export class ActivateAccountEmail extends Email {
@@ -16,7 +16,7 @@ export class ActivateAccountEmail extends Email {
     ) {
         super({
             from: noReplyAddress,
-            to: new EmailAddressee(user.userName, user.email),
+            to: new EmailAddress(user.userName, user.email.value)
         });
     }
 
