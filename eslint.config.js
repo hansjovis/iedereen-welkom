@@ -1,8 +1,8 @@
-const js = require("@eslint/js");
-const tseslint = require("typescript-eslint");
-const { defineConfig } = require("eslint/config");
+import js from "@eslint/js";
+import tseslint from "typescript-eslint";
+import { defineConfig } from "eslint/config";
 
-module.exports = defineConfig([
+export default defineConfig([
     {
         basePath: "./src/",
         files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
