@@ -1,5 +1,5 @@
-import { Equatable } from "common/Equatable";
-import { InvalidValue } from "exceptions";
+import { Equatable } from "../../../common/Equatable.js";
+import { InvalidValue } from "../../../exceptions/index.js";
 
 export class InvalidEmailAddress extends InvalidValue {
     constructor(emailAddress: string) {

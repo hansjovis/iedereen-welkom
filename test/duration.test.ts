@@ -1,4 +1,6 @@
-import { Duration } from "modules/auth";
+import { describe, it } from "node:test";
+import { expect } from "expect";
+import { Duration } from "../dist/modules/auth/index.js";
 
 describe("Duration", () => {
     it("can parse a duration expressed as days as a string", () => {

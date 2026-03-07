@@ -1,10 +1,9 @@
 // Dependencies from other modules
-import { NotFound, Unauthorized } from "exceptions";
-import { UnsafeCredentials, ProtectedCredentials } from "modules/auth";
+import { NotFound, Unauthorized } from "../../exceptions/index.js";
+import { UnsafeCredentials, ProtectedCredentials } from "../../modules/auth/index.js";
 // Local dependencies
-import { User, EmailAddress } from "./domain";
-import { UserRepository } from "./user.repository";
-import { UUID } from "./domain/UUID";
+import { User, EmailAddress, UUID } from "./domain/index.js";
+import { UserRepository } from "./user.repository.js";
 
 export class UserService {
     constructor(
@@ -26,7 +25,11 @@ export class UserService {
         return user;
     }
 
-    async login(user: User, credentials: UnsafeCredentials[]): Promise<User> {
+    async login(email: EmailAddress, credentials: UnsafeCredentials[]): Promise<User> {
+        const user = this.userRepository.retrieveByEmail(email);
+        if (user === undefined) {
+            throw new NotFound(`User with email address ${email} could not be found.`);
+        }
         if(await user.validateEnteredCredentials(credentials) === false) {
             throw new Unauthorized();
         };

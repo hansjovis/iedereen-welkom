@@ -1,14 +1,19 @@
 import { Handler } from "express";
 
-import { UserService } from "../user.service";
-import { EmailAddress } from "../domain";
+import { UserService } from "../user.service.js";
+import { EmailAddress } from "../domain/index.js";
+
+type RequestBody = {
+    email: string,
+    userName: string,
+}
 
 type Params = {
     email: EmailAddress,
     userName: string,
 }
 
-function parseRequestBody(body: Record<string, unknown>): Params {
+function parseRequestBody(body: RequestBody): Params {
     try {
         const email = new EmailAddress(body.email);
         const userName = body.userName;

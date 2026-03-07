@@ -1,4 +1,4 @@
-import { HTTPException, StatusCode } from "./HTTPException";
+import { HTTPException, StatusCode } from "./HTTPException.js";
 
 
 export class Unauthorized extends Error implements HTTPException {

@@ -1,8 +1,10 @@
-import { Duration } from "./Duration";
-import { ProtectedCredentials, UnsafeCredentials } from "./Credentials";
-import { URI } from "common";
-import { IedereenWelkomNS } from "namespaces";
 import { verify, generate } from "otplib";
+
+import { URI } from "../../../common/index.js";
+import { IedereenWelkomNS } from "../../../namespaces.js";
+
+import { Duration } from "./Duration.js";
+import { ProtectedCredentials, UnsafeCredentials } from "./Credentials.js";
 
 export class InvalidLoginCode extends Error {};
 

@@ -1,4 +1,4 @@
-import { EmailAddressee } from "./EmailAddressee";
+import { EmailAddressee } from "./EmailAddressee.js";
 
 export type Headers = {
     from: EmailAddressee,

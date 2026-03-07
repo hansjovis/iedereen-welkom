@@ -1,6 +1,6 @@
 import React from "react";
 
-import { kebabCase } from "common";
+import { kebabCase } from "../../../common/index.js";
 
 type InputType = "text" | "email" | "number" | "range";
 

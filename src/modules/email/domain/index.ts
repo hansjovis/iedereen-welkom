@@ -1,2 +1,2 @@
-export * from "./Email";
-export * from "./EmailAddressee";
+export * from "./Email.js";
+export * from "./EmailAddressee.js";

@@ -1,7 +1,12 @@
-import { UnsafeCredentials, ProtectedCredentials, LoginCodeConfiguration, Duration } from "modules/auth";
+import { 
+    UnsafeCredentials, 
+    ProtectedCredentials, 
+    LoginCodeConfiguration, 
+    Duration 
+} from "../../../modules/auth/index.js";
 
-import { EmailAddress } from "./EmailAddress";
-import { UUID } from "./UUID";
+import { EmailAddress } from "./EmailAddress.js";
+import { UUID } from "./UUID.js";
 
 export type UserProps = {
     id: UUID,

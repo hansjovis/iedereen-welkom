@@ -1,5 +1,8 @@
-import { InvalidValue } from "exceptions";
-import { UUID } from "modules/user/domain/UUID"
+import { describe, it } from "node:test";
+import { expect } from "expect";
+
+import { InvalidValue } from "../dist/exceptions/index.js";
+import { UUID } from "../dist/modules/user/domain/index.js"
 
 const uuidRegex = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/gm;
 

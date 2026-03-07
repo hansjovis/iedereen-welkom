@@ -1,8 +1,9 @@
 import bcrypt from "bcryptjs";
 
-import { URI } from "common";
-import { UnsafeCredentials, ProtectedCredentials } from "./Credentials";
-import { IedereenWelkomNS } from "namespaces";
+import { URI } from "../../../common/index.js";
+import { IedereenWelkomNS } from "../../../namespaces.js";
+
+import { UnsafeCredentials, ProtectedCredentials } from "./Credentials.js";
 
 export class UnsafePassword extends Error {}
 

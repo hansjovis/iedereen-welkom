@@ -1,6 +1,6 @@
-import { User, EmailAddress } from "./domain";
-import { UUID } from "./domain/UUID";
-import { UserRepository } from "./user.repository";
+import { User, EmailAddress } from "./domain/index.js";
+import { UUID } from "./domain/index.js";
+import { UserRepository } from "./user.repository.js";
 
 export class InMemoryUserRepository implements UserRepository {
     private readonly users: Map<string, User> = new Map();

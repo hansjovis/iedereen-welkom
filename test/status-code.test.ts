@@ -1,4 +1,7 @@
-import { InvalidStatusCode, StatusCode } from "exceptions/HTTPException";
+import { describe, it } from "node:test";
+import { expect } from "expect";
+
+import { InvalidStatusCode, StatusCode } from "../dist/exceptions/HTTPException.js";
 
 describe("A status code", () => {
     it("cannot be created with an invalid code", () => {

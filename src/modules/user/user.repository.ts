@@ -1,6 +1,4 @@
-import { User } from "./domain/User";
-import { EmailAddress } from "./domain/EmailAddress";
-import { UUID } from "./domain/UUID";
+import { User, EmailAddress, UUID } from "./domain/index.js";
 
 export interface UserRepository {
     save(user: User): void;

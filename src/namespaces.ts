@@ -1,4 +1,4 @@
-import { Namespace } from "./common/Namespace";
+import { Namespace } from "./common/index.js";
 
 export const ActivityStreamsNS = new Namespace(
     "acs",

@@ -1,4 +1,4 @@
-import { EmailAddress } from "modules/user/domain";
+import { EmailAddress } from "../../../modules/user/domain/index.js";
 
 export class EmailAddressee {
     constructor(

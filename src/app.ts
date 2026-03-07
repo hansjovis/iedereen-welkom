@@ -1,14 +1,14 @@
 import express from "express";
 import React from "react";
 
-import { render } from "render";
+import { render } from "render.js";
 
 // Routes
-import { register } from "modules/user/routes";
+import { register } from "./modules/user/routes/index.js";
 // Layouts
-import MainLayout from "views/layouts/MainLayout";
-import { Container } from "container";
-import { UserService } from "modules/user/user.service";
+import MainLayout from "./views/layouts/MainLayout.js";
+import { Container } from "container.js";
+import { UserService } from "./modules/user/user.service.js";
 
 const app = express();
 

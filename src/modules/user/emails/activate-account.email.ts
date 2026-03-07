@@ -1,7 +1,7 @@
-import { Email, EmailAddressee } from "modules/email/domain";
-import { LoginCode } from "modules/auth";
+import { Email, EmailAddressee } from "../../../modules/email/domain/index.js";
+import { LoginCode } from "../../../modules/auth/index.js";
 
-import { EmailAddress, User } from "../domain";
+import { EmailAddress, User } from "../domain/index.js";
 
 const noReplyAddress = new EmailAddressee(
     "Iedereen Welkom", 

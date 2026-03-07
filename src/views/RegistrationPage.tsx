@@ -1,10 +1,10 @@
 import React from "react";
 
-import MainLayout from "./layouts/MainLayout";
-import EmailInput from "./components/form/EmailInput";
-import TextInput from "./components/form/TextInput";
-import SubmitButton from "./components/form/SubmitBurron";
-import Form from "./components/form/Form";
+import MainLayout from "./layouts/MainLayout.js";
+import EmailInput from "./components/form/EmailInput.js";
+import TextInput from "./components/form/TextInput.js";
+import SubmitButton from "./components/form/SubmitBurron.js";
+import Form from "./components/form/Form.js";
 
 export default function RegistrationPage() {
     return <MainLayout

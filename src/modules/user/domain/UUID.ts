@@ -1,5 +1,5 @@
-import { Equatable } from "common/Equatable";
-import { InvalidValue } from "exceptions";
+import { Equatable } from "../../../common/Equatable.js";
+import { InvalidValue } from "../../../exceptions/index.js";
 
 export class UUID implements Equatable<UUID> {
     private static regex = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/gm;

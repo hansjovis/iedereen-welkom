@@ -1,4 +1,4 @@
-import { URI } from "common";
+import { URI } from "../../../common/index.js";
 
 /**
  * Protected credentials are credentials that can be stored safely,

@@ -1,3 +1,3 @@
-export * from "./EmailAddress";
-export * from "./User";
-export * from "./UUID";
+export * from "./EmailAddress.js";
+export * from "./User.js";
+export * from "./UUID.js";

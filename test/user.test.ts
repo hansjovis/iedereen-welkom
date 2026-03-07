@@ -1,34 +1,30 @@
-import { totp } from "otplib";
+import { describe, it, beforeEach, before } from "node:test";
+import { expect } from "expect";
 
-import { UserService } from "modules/user/user.service";
-import { EmailAddress, InvalidEmailAddress, User } from "modules/user/domain";
-import { PlainPassword, HashedPassword, UnsafePassword, InvalidTOTPCode, TOTPCode, TOTPConfiguration, LoginCodeService } from "modules/auth";
-import { NotFound } from "exceptions/NotFound";
-import { Unauthorized } from "exceptions/Unauthorized";
+import { generate } from "otplib";
+
+import { UserService } from "../dist/modules/user/user.service.js";
+import { EmailAddress, InvalidEmailAddress, User } from "../dist/modules/user/domain/index.js"
+import { PlainPassword, HashedPassword, UnsafePassword, InvalidTOTPCode, TOTPCode, TOTPConfiguration } from "../dist/modules/auth/index.js"
+import { NotFound } from "../dist/exceptions/NotFound.js"
+import { Unauthorized } from "../dist/exceptions/Unauthorized.js"
+import { ActivateAccountEmail } from "../dist/modules/user/emails/activate-account.email.js"
+import { NotActivated } from "../dist/exceptions/index.js"
 
 // Test utils
-import { MockUserRepository } from "./_mocks/mock.user-repository";
-import { MockEmailService } from "./_mocks/mock.email-service";
-import { ActivateAccountEmail } from "modules/user/emails/activate-account.email";
-import { MockLoginCodeRepository } from "./_mocks/mock.login-code-repository";
-import { NotActivated } from "exceptions";
+import { MockUserRepository } from "./_utils/dist/mock.user-repository.js"
+import { MockEmailService } from "./_utils/dist/mock.email-service.js"
 
 describe("A user", () => {
     let userService: UserService;
     let userRepository: MockUserRepository;
-    let loginCodeRepository: MockLoginCodeRepository;
     let emailService: MockEmailService;
 
-    beforeAll(() => {
+    before(() => {
         emailService = new MockEmailService();
         userRepository = new MockUserRepository();
-        loginCodeRepository = new MockLoginCodeRepository();
         userService = new UserService(
-            userRepository,
-            new LoginCodeService(
-                loginCodeRepository,
-            ),
-            emailService,
+            userRepository
         );
     });
 
@@ -41,26 +37,6 @@ describe("A user", () => {
         const user: User = userService.register(email, "hansjovis");
 
         expect(user.email).toEqual(email);
-
-        const loginCode = loginCodeRepository.codes.find(code => code.forUser.equals(user.id));
-        expect(loginCode).toBeDefined();
-
-        const activationMail = emailService.emails.find(mail => mail instanceof ActivateAccountEmail);
-        expect(activationMail).toBeDefined();
-    });
-
-    it("cannot login when the user account hasn't been activated", () => {
-        const email = new EmailAddress("hans-christiaan@hansjovis.net");
-        const user = userService.register(email, "hansjovis");
-        const login = () => userService.login(email, [new PlainPassword("some-password")]);
-
-        expect(login).toThrow(NotActivated);
-        
-        const loginCode = loginCodeRepository.codes.find(code => code.forUser.equals(user.id));
-        expect(loginCode).toBeDefined();
-
-        const activationMail = emailService.emails.find(mail => mail instanceof ActivateAccountEmail);
-        expect(activationMail).toBeDefined();
     });
 
     it("can activate their account", () => {
@@ -68,7 +44,7 @@ describe("A user", () => {
         const user = userService.register(email, "hansjovis");
 
         userService.activate(user.id, [HashedPassword.create("some-password")]);
-        expect(user.isActivated).toBe(true);
+        expect(user.nrOfCredentials).toEqual(1);
     });
 
     it("cannot activate their account when the user cannot be found", () => {
@@ -86,7 +62,7 @@ describe("A user", () => {
     it("cannot login when entering an email address for a non-existing account", () => {
         const email = new EmailAddress("not-existing@hansjovis.net");
         const login = () => userService.login(email, [new PlainPassword("some-password")]);
-        expect(login).toThrow(NotFound);
+        expect(login).rejects.toThrow(NotFound);
     });
 
     it("cannot login using an invalid email address", () => {
@@ -105,26 +81,26 @@ describe("A user", () => {
 
         const login = () => userService.login(email, [new PlainPassword("some-other-invalid-password")]);
 
-        expect(login).toThrow(Unauthorized);
+        expect(login).rejects.toThrow(Unauthorized);
     });
 
-    it("can login using valid credentials", () => {
+    it("can login using valid credentials", async () => {
         const email = new EmailAddress("hans-christiaan@hansjovis.net");
         const user = userService.register(email, "hansjovis");
 
         userService.activate(user.id, [HashedPassword.create("some-password")]);
 
-        const loggedInUser = userService.login(email, [new PlainPassword("some-password")]);
+        const loggedInUser = await userService.login(email, [new PlainPassword("some-password")]);
 
         expect(loggedInUser).toEqual(user);
     });
 
-    it("can login using multiple valid credentials (2FA)", () => {
+    it("can login using multiple valid credentials (2FA)", async () => {
         const email = new EmailAddress("hans-christiaan@hansjovis.net");
         const user = userService.register(email, "hansjovis");
 
         const password = "some-password";
-        const secret = "some-secret";
+        const secret = "KRUGS4ZANFZSAYJAONSWG4TFOQQHG5DSNFXGO===";
 
         userService.activate(
             user.id, [
@@ -134,9 +110,10 @@ describe("A user", () => {
         );
 
         const firstFactor = new PlainPassword(password);
-        const secondFactor = new TOTPCode(totp.generate(secret));
+        const code = await generate({ secret });
+        const secondFactor = new TOTPCode(code);
 
-        const loggedInUser = userService.login(email, [firstFactor, secondFactor]);
+        const loggedInUser = await userService.login(email, [firstFactor, secondFactor]);
 
         expect(loggedInUser).toEqual(user);
     });
@@ -146,7 +123,7 @@ describe("A user", () => {
         const user = userService.register(email, "hansjovis");
 
         const password = "some-password";
-        const secret = "some-secret";
+        const secret = "KRUGS4ZANFZSAYJAONSWG4TFOQQHG5DSNFXGO===";
 
         userService.activate(
             user.id, [

@@ -1,5 +1,5 @@
 import React from "react";
-import Input from "./Input";
+import Input from "./Input.js";
 
 type Props = {
     label: string,

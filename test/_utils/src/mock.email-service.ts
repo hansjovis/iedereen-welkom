@@ -1,5 +1,5 @@
-import { Email } from "../../src/modules/email/domain";
-import { EmailService } from "../../src/modules/email/email.service";
+import { Email } from "../../../dist/modules/email/domain/index.js";
+import { EmailService } from "../../../dist/modules/email/email.service.js";
 
 export class MockEmailService implements EmailService {
     public readonly emails: Email[] = [];
