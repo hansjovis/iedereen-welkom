@@ -1,18 +1,25 @@
+// External dependencies
+import { Inject, Injectable, Logger, LoggerService } from "@nestjs/common";
 // Dependencies from other modules
 import { NotFound, Unauthorized } from "../../exceptions/index.js";
-import { UnsafeCredentials, ProtectedCredentials } from "../../modules/auth/index.js";
+import { UnsafeCredentials, ProtectedCredentials } from "../auth/index.js";
 // Local dependencies
 import { User, EmailAddress, UUID } from "./domain/index.js";
-import { UserRepository } from "./user.repository.js";
+import { UserRepository } from "./repositories/user.repository.js";
 
+@Injectable()
 export class UserService {
+    private readonly logger: LoggerService = new Logger(UserService.name);
+
     constructor(
+        @Inject("UserRepository")
         private readonly userRepository: UserRepository,
     ) {}
 
     register(email: EmailAddress, userName: string): User {
         const user = User.create(email, userName);
         this.userRepository.save(user);
+        this.logger.log(`Registered user with email ${email}.`);
         return user;
     }
 

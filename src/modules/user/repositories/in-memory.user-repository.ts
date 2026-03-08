@@ -1,7 +1,9 @@
-import { User, EmailAddress } from "./domain/index.js";
-import { UUID } from "./domain/index.js";
+import { Injectable } from "@nestjs/common";
+import { User, EmailAddress } from "../domain/index.js";
+import { UUID } from "../domain/index.js";
 import { UserRepository } from "./user.repository.js";
 
+@Injectable()
 export class InMemoryUserRepository implements UserRepository {
     private readonly users: Map<string, User> = new Map();
 

@@ -3,17 +3,12 @@
         "target": "esnext",
         "module": "nodenext",
         "baseUrl": "./src",
-        "outDir": "dist",
+        "outDir": "./dist",
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "allowImportingTsExtensions": true,
-        "noEmit": true,
         "jsx": "react",
         "declaration": true,
-        "paths": {
-            "#root": ["*"]
-        }
     },
-    "include": ["src", "test"],
+    "include": ["src"],
 }

@@ -2,7 +2,7 @@
   "name": "iedereen-welkom",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/app.js",
+  "main": "./dist/main.js",
   "type": "module",
   "imports": {
     "#root": "./*.js"
@@ -10,8 +10,8 @@
   "scripts": {
     "test": "node --experimental-test-coverage --test-coverage-include=dist/**/*.js --test test/**/*.test.ts",
     "lint": "eslint ./src",
-    "build": "tsc --project build.tsconfig.json",
-    "dev": "NODE_PATH=./dist node ./dist/app.js"
+    "build": "nest build",
+    "dev": "nest start --watch"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +28,9 @@
     "typescript-eslint": "^8.50.1"
   },
   "dependencies": {
+    "@nestjs/common": "^11.1.16",
+    "@nestjs/core": "^11.1.16",
+    "@nestjs/platform-express": "^11.1.16",
     "bcryptjs": "^3.0.3",
     "express": "^5.2.1",
     "jsonld": "^9.0.0",
