@@ -1,8 +1,5 @@
 import { verify, generate } from "otplib";
 
-import { URI } from "../../../common/index.js";
-import { IedereenWelkomNS } from "../../../namespaces.js";
-
 import { Duration } from "./Duration.js";
 import { ProtectedCredentials, UnsafeCredentials } from "./Credentials.js";
 
@@ -14,7 +11,7 @@ export class InvalidLoginCode extends Error {};
  * Use `TOTPCredentials` for TOTP using authenticators.
  */
 export class LoginCodeConfiguration implements ProtectedCredentials {
-    forType: URI = new URI(IedereenWelkomNS, "credentials/login-code");
+    forType: "login-code";
 
     constructor(
         private readonly secret: string, 
@@ -37,7 +34,7 @@ export class LoginCodeConfiguration implements ProtectedCredentials {
 }
 
 export class LoginCode implements UnsafeCredentials {
-    type: URI = new URI(IedereenWelkomNS, "credentials/totp");
+    type = "login-code";
     constructor(public readonly value: string) {
         if (value.match(/\d{6}/) === null) {
             throw new InvalidLoginCode("Login code should consist of 6 numbers");

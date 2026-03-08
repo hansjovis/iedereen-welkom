@@ -1,20 +1,17 @@
 import bcrypt from "bcryptjs";
 
-import { URI } from "../../../common/index.js";
-import { IedereenWelkomNS } from "../../../namespaces.js";
-
 import { UnsafeCredentials, ProtectedCredentials } from "./Credentials.js";
 
 export class UnsafePassword extends Error {}
 
 export class PlainPassword implements UnsafeCredentials {
-    type: URI = new URI(IedereenWelkomNS, "credentials/password");
+    type = "password";
 
     constructor(public readonly plainPassword: string) {}
 }
 
 export class HashedPassword implements ProtectedCredentials {
-    forType: URI = new URI(IedereenWelkomNS, "credentials/password");
+    forType = "password";
 
     constructor(private readonly hashedPassword: string) {}
 

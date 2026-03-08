@@ -31,7 +31,7 @@ export class UserService {
             throw new NotFound(`User with email address ${email} could not be found.`);
         }
         if(await user.validateEnteredCredentials(credentials) === false) {
-            throw new Unauthorized();
+            throw new Unauthorized("Invalid credentials");
         };
 
         return user;

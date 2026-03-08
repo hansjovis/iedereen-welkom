@@ -40,7 +40,7 @@ export class User {
     }
 
     private async validateSingleCredential(storedCredentials: ProtectedCredentials, enteredCredentials: UnsafeCredentials[]) {
-        const entered = enteredCredentials.find(it => it.type.equals(storedCredentials.forType));
+        const entered = enteredCredentials.find(it => it.type === storedCredentials.forType);
         if (entered === undefined) {
             // We have configured a factor, but no entered credentials are of that type.
             return false;

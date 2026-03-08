@@ -1,11 +1,9 @@
-import { URI } from "../../../common/index.js";
-
 /**
  * Protected credentials are credentials that can be stored safely,
  * for example hashed passwords.
  */
 export interface ProtectedCredentials {
-    readonly forType: URI;
+    readonly forType: string;
     check(credentials: UnsafeCredentials): Promise<boolean>;
 }
 
@@ -15,5 +13,5 @@ export interface ProtectedCredentials {
  * Use this class for credentials that have been entered and need to be validated against protected credentials in storage.
  */
 export interface UnsafeCredentials {
-    readonly type: URI;
+    readonly type: string;
 }
