@@ -43,4 +43,8 @@ export class UserService {
 
         return user;
     }
+
+    async retrieveByEmail(email: EmailAddress): Promise<User> {
+        return this.userRepository.retrieveByEmail(email);
+    }
 }

@@ -15,29 +15,36 @@ export class LoginCodeConfiguration implements ProtectedCredentials {
 
     constructor(
         private readonly secret: string, 
-        public readonly validDuration: Duration
+        public readonly validFor: Duration
     ) {}
 
     async check(credentials: LoginCode): Promise<boolean> {
         const result = await verify({
             token: credentials.value, 
             secret: this.secret,
-            epochTolerance: this.validDuration.inSeconds,
+            epochTolerance: this.validFor.inSeconds,
         });
         return result.valid;
     }
 
     async generate(): Promise<LoginCode> {
         const code = await generate({ secret: this.secret });
-        return new LoginCode(code);
+        return new LoginCode(code, this.validFor);
     }
 }
 
 export class LoginCode implements UnsafeCredentials {
     type = "login-code";
-    constructor(public readonly value: string) {
+    constructor(
+        public readonly value: string,
+        public readonly validFor: Duration,
+    ) {
         if (value.match(/\d{6}/) === null) {
             throw new InvalidLoginCode("Login code should consist of 6 numbers");
         }
+    }
+
+    toString() {
+        return this.value;
     }
 }

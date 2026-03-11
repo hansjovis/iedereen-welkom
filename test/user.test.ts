@@ -34,6 +34,12 @@ describe("A user", () => {
         expect(user.email).toEqual(email);
     });
 
+    it("cannot register two accounts under the same email address", () => {
+        const email = new EmailAddress("hans-christiaan@hansjovis.net");
+        userService.register(email, "hansjovis");
+        expect(() => userService.register(email, "hansjovis")).toThrow();
+    });
+
     it("can activate their account", () => {
         const email = new EmailAddress("hans-christiaan@hansjovis.net");
         const user = userService.register(email, "hansjovis");
@@ -100,7 +106,11 @@ describe("A user", () => {
         userService.activate(
             user.id, [
                 HashedPassword.create(password),
-                new TOTPConfiguration(secret),
+                new TOTPConfiguration({
+                    accountName: user.email.toString(),
+                    issuer: "Iedereen Welkom",
+                    secret
+                }),
             ]
         );
 
@@ -123,7 +133,11 @@ describe("A user", () => {
         userService.activate(
             user.id, [
                 HashedPassword.create(password),
-                new TOTPConfiguration(secret),
+                new TOTPConfiguration({
+                    accountName: user.email.toString(),
+                    issuer: "Iedereen Welkom",
+                    secret
+                }),
             ]
         );
 

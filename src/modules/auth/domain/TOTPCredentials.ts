@@ -20,22 +20,25 @@ export class TOTPSecret {
     get secret() {
         return this.value;
     }
+}
 
-    toJSON() {
-        return { value: "********" };
-    }
-
-    toString() {
-        return "********";
-    }
+type ConfigProps = {
+    issuer: string,
+    accountName: string,
+    secret: string,
 }
 
 export class TOTPConfiguration implements ProtectedCredentials {
     forType = "totp";
-    private readonly secret: TOTPSecret;
 
-    constructor(secret: string) {
-        this.secret = new TOTPSecret(secret);
+    private readonly secret: TOTPSecret;
+    private readonly accountName: string;
+    private readonly issuer: string;
+
+    constructor(props: ConfigProps) {
+        this.secret = new TOTPSecret(props.secret);
+        this.accountName = props.accountName;
+        this.issuer = props.issuer;
     }
 
     async check(code: TOTPCode): Promise<boolean> {
@@ -44,6 +47,12 @@ export class TOTPConfiguration implements ProtectedCredentials {
             secret: this.secret.secret,
         });
         return result.valid;
+    }
+
+    toString() {
+        const issuer = encodeURIComponent(this.issuer);
+        const accountName = encodeURIComponent(this.accountName);
+        return `otpauth://totp/${issuer}:${accountName}?secret=${this.secret}&issuer=${issuer}`;
     }
 }
 

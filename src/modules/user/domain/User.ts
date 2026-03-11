@@ -2,7 +2,8 @@ import {
     UnsafeCredentials, 
     ProtectedCredentials, 
     LoginCodeConfiguration, 
-    Duration 
+    Duration,
+    LoginCode,
 } from "../../../modules/auth/index.js";
 
 import { EmailAddress } from "./EmailAddress.js";
@@ -19,7 +20,7 @@ export class User {
     readonly userName: string;
     readonly email: EmailAddress;
 
-    private credentials: ProtectedCredentials[] = [];
+    public credentials: ProtectedCredentials[] = [];
 
     constructor(props: UserProps) {
         this.id = props.id;
@@ -35,8 +36,14 @@ export class User {
         return new User({ id, userName, email });
     }
 
-    get nrOfCredentials(): number {
-        return this.credentials.length;
+    async generateLoginCode(): Promise<LoginCode> {
+        const loginCodeConfig = this.credentials.find(it => it instanceof LoginCodeConfiguration);
+        if (loginCodeConfig === undefined) {
+            throw new Error(
+                `Login code not configured for user with email ${this.email}`,
+            );
+        }
+        return loginCodeConfig.generate();
     }
 
     private async validateSingleCredential(storedCredentials: ProtectedCredentials, enteredCredentials: UnsafeCredentials[]) {
@@ -45,11 +52,7 @@ export class User {
             // We have configured a factor, but no entered credentials are of that type.
             return false;
         }
-        if (await storedCredentials.check(entered) === false) {
-            // Entered credentials are invalid.
-            return false;
-        }
-        return true;
+        return await storedCredentials.check(entered) === false;
     }
 
     async validateEnteredCredentials(enteredCredentials: UnsafeCredentials[]): Promise<boolean> {

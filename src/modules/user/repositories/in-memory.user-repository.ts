@@ -8,6 +8,9 @@ export class InMemoryUserRepository implements UserRepository {
     private readonly users: Map<string, User> = new Map();
 
     save(user: User): void {
+        if (this.users.values().some(it => it.email === user.email)) {
+            throw new Error(`Only one user with email ${user.email} allowed.`);
+        }
         this.users.set(user.id.toString(), user);
     }
     
