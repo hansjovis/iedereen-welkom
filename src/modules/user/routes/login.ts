@@ -1,6 +1,6 @@
 import { Handler } from "express";
 
-import { PlainPassword, TOTPCode, UnsafeCredentials } from "../../auth/index.js";
+import { Password, TOTPCode, UnsafeCredentials } from "../../auth/index.js";
 
 import { UserService } from "../user.service.js";
 import { EmailAddress } from "../domain/index.js";
@@ -21,7 +21,7 @@ function parseRequestBody(body: RequestBody): Params {
     const enteredCredentials: UnsafeCredentials[] = [];
 
     if (body.enteredCredentials.password) {
-        enteredCredentials.push(new PlainPassword(body.enteredCredentials.password));
+        enteredCredentials.push(new Password(body.enteredCredentials.password));
     }
     if (body.enteredCredentials.totp) {
         enteredCredentials.push(new TOTPCode(body.enteredCredentials.totp));

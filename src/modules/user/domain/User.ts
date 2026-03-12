@@ -1,6 +1,6 @@
 import { 
     UnsafeCredentials, 
-    ProtectedCredentials, 
+    CredentialsConfiguration, 
     LoginCodeConfiguration, 
     Duration,
     LoginCode,
@@ -20,7 +20,7 @@ export class User {
     readonly userName: string;
     readonly email: EmailAddress;
 
-    public credentials: ProtectedCredentials[] = [];
+    public credentials: CredentialsConfiguration[] = [];
 
     constructor(props: UserProps) {
         this.id = props.id;
@@ -46,7 +46,7 @@ export class User {
         return loginCodeConfig.generate();
     }
 
-    private async validateSingleCredential(storedCredentials: ProtectedCredentials, enteredCredentials: UnsafeCredentials[]) {
+    private async validateSingleCredential(storedCredentials: CredentialsConfiguration, enteredCredentials: UnsafeCredentials[]) {
         const entered = enteredCredentials.find(it => it.type === storedCredentials.forType);
         if (entered === undefined) {
             // We have configured a factor, but no entered credentials are of that type.
@@ -60,7 +60,7 @@ export class User {
         return results.every(it => it === true);
     }
 
-    activate(credentials: ProtectedCredentials[]): void {
+    activate(credentials: CredentialsConfiguration[]): void {
         this.credentials = credentials;
     }
 }

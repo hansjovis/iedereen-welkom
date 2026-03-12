@@ -1,7 +1,7 @@
 import { verify, generate } from "otplib";
 
 import { Duration } from "./Duration.js";
-import { ProtectedCredentials, UnsafeCredentials } from "./Credentials.js";
+import { CredentialsConfiguration, UnsafeCredentials } from "./Credentials.js";
 
 export class InvalidLoginCode extends Error {};
 
@@ -10,7 +10,7 @@ export class InvalidLoginCode extends Error {};
  * 
  * Use `TOTPCredentials` for TOTP using authenticators.
  */
-export class LoginCodeConfiguration implements ProtectedCredentials {
+export class LoginCodeConfiguration implements CredentialsConfiguration {
     forType: "login-code";
 
     constructor(

@@ -1,31 +1,31 @@
 import bcrypt from "bcryptjs";
 
-import { UnsafeCredentials, ProtectedCredentials } from "./Credentials.js";
+import { UnsafeCredentials, CredentialsConfiguration } from "./Credentials.js";
 
 export class UnsafePassword extends Error {}
 
-export class PlainPassword implements UnsafeCredentials {
+export class Password implements UnsafeCredentials {
     type = "password";
 
-    constructor(public readonly plainPassword: string) {}
+    constructor(public readonly value: string) {}
 }
 
-export class HashedPassword implements ProtectedCredentials {
+export class PasswordConfiguration implements CredentialsConfiguration {
     forType = "password";
 
     constructor(private readonly hashedPassword: string) {}
 
-    static create(password: string): HashedPassword {
+    static create(password: string): PasswordConfiguration {
         if (password.length < 12) {
             throw new UnsafePassword(
                 `Password should be at least 12 characters, but entered password was only ${password.length} characters long.`
             );
         }
         const salt = bcrypt.genSaltSync(12);
-        return new HashedPassword(bcrypt.hashSync(password, salt));
+        return new PasswordConfiguration(bcrypt.hashSync(password, salt));
     }
 
-    async check(credentials: PlainPassword): Promise<boolean> {
-        return bcrypt.compareSync(credentials.plainPassword, this.hashedPassword);
+    async check(password: Password): Promise<boolean> {
+        return bcrypt.compareSync(password.value, this.hashedPassword);
     }
 }

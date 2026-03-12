@@ -1,9 +1,16 @@
 /**
- * Protected credentials are credentials that can be stored safely,
- * for example hashed passwords.
+ * Configuration for credentials used in authentication.
+ * 
+ * For example a hashed password or secret.
  */
-export interface ProtectedCredentials {
+export interface CredentialsConfiguration {
     readonly forType: string;
+    /**
+     * Check the given credentials agains the configuration.
+     * 
+     * @param credentials The credentials to check.
+     * @returns A promise indicating whether the given credentials are valid.
+     */
     check(credentials: UnsafeCredentials): Promise<boolean>;
 }
 

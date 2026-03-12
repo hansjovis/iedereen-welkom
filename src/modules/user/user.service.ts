@@ -2,7 +2,7 @@
 import { Inject, Injectable, Logger, LoggerService } from "@nestjs/common";
 // Dependencies from other modules
 import { NotFound, Unauthorized } from "../../exceptions/index.js";
-import { UnsafeCredentials, ProtectedCredentials } from "../auth/index.js";
+import { UnsafeCredentials, CredentialsConfiguration } from "../auth/index.js";
 // Local dependencies
 import { User, EmailAddress, UUID } from "./domain/index.js";
 import { UserRepository } from "./repositories/user.repository.js";
@@ -23,7 +23,7 @@ export class UserService {
         return user;
     }
 
-    activate(userID: UUID, credentials: ProtectedCredentials[]): User {
+    activate(userID: UUID, credentials: CredentialsConfiguration[]): User {
         const user = this.userRepository.retrieveById(userID);
         if (user === undefined) {
             throw new NotFound(`User with id ${userID} could not be found.`);

@@ -1,6 +1,6 @@
 import { verify } from "otplib";
 
-import { ProtectedCredentials, UnsafeCredentials } from "./Credentials.js";
+import { CredentialsConfiguration, UnsafeCredentials } from "./Credentials.js";
 
 export class InvalidTOTPCode extends Error {}
 
@@ -28,7 +28,7 @@ type ConfigProps = {
     secret: string,
 }
 
-export class TOTPConfiguration implements ProtectedCredentials {
+export class TOTPConfiguration implements CredentialsConfiguration {
     forType = "totp";
 
     private readonly secret: TOTPSecret;
