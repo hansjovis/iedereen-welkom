@@ -17,7 +17,7 @@ export interface CredentialsConfiguration {
 /**
  * Unsafe credentials are credentials that cannot be stored safely and have not been validated.
  *
- * Use this class for credentials that have been entered and need to be validated against protected credentials in storage.
+ * Implement this interface for credentials that have been entered and need to be validated against protected credentials in storage.
  */
 export interface UnsafeCredentials {
     readonly type: string;

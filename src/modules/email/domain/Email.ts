@@ -8,25 +8,36 @@ export type Headers = {
 };
 
 export abstract class Email {
-    constructor(
-        private readonly headers: Headers,
-    ) {}
+    public readonly from: EmailAddress;
+    public readonly to: EmailAddress[];
+    public readonly cc: EmailAddress[] = [];
+    public readonly bcc: EmailAddress[] = [];
+
+    constructor(headers: Headers) {
+        this.from = headers.from;
+        this.to = Array.isArray(headers.to) ? headers.to : [headers.to];
+        if (headers.cc) {
+            this.cc = headers.cc;
+        }
+        if (headers.bcc) {
+            this.bcc = headers.bcc;
+        }
+    }
 
     abstract get subject(): string;
     abstract get body(): string;
 
     toString(): string {
-        const { from, to, cc, bcc } = this.headers;
         const headers = [
             `Subject: ${this.subject}`,
-            `From: ${from.toString()}`,
-            `To: ${Array.isArray(to) ? to.join(", ") : to}`,
+            `From: ${this.from}`,
+            `To: ${this.to}`,
         ];
-        if (cc) {
-            headers.push(`CC: ${cc.join(", ")}`);
+        if (this.cc) {
+            headers.push(`CC: ${this.cc.join(", ")}`);
         }
-        if (bcc) {
-            headers.push(`BCC: ${bcc.join(", ")}`);
+        if (this.bcc) {
+            headers.push(`BCC: ${this.bcc.join(", ")}`);
         }
 
         return `${headers.join("\n")}\n\n${this.body}`;

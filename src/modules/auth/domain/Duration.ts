@@ -14,9 +14,9 @@ export class Duration {
     ) {}
 
     static parse(str: string): Duration {
-        const [amountStr, unitStr] = str.split(" ");
+        const [amountStr, unit] = str.split(" ");
         const amount = parseFloat(amountStr);
-        switch (unitStr) {
+        switch (unit) {
             case "seconds": return new Duration(MsInSecond * amount);
             case "minutes": return new Duration(MsInMinute * amount);
             case "hours": return new Duration(MsInHour * amount);
@@ -26,19 +26,19 @@ export class Duration {
     }
 
     get inSeconds(): number {
-        return Math.floor(this.inMilliseconds / MsInSecond);
+        return this.inMilliseconds / MsInSecond;
     }
 
     get inMinutes(): number {
-        return Math.floor(this.inMilliseconds / MsInMinute);
+        return this.inMilliseconds / MsInMinute;
     }
 
     get inHours(): number {
-        return Math.floor(this.inMilliseconds / MsInHour);
+        return this.inMilliseconds / MsInHour;
     }
 
     get inDays(): number {
-        return Math.floor(this.inMilliseconds / MsInDays);
+        return this.inMilliseconds / MsInDays;
     }
 
     toString(): string {

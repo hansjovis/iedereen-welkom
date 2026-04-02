@@ -28,7 +28,8 @@ export class UserService {
         if (user === undefined) {
             throw new NotFound(`User with id ${userID} could not be found.`);
         }
-        user.activate(credentials);
+        user.auth.clear();
+        credentials.forEach(it => user.auth.configure(it));
         return user;
     }
 
@@ -37,7 +38,7 @@ export class UserService {
         if (user === undefined) {
             throw new NotFound(`User with email address ${email} could not be found.`);
         }
-        if(await user.validateEnteredCredentials(credentials) === false) {
+        if(await user.auth.check(...credentials) === false ) {
             throw new Unauthorized("Invalid credentials");
         };
 

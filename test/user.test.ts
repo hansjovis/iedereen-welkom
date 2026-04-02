@@ -5,7 +5,7 @@ import { generate } from "otplib";
 
 import { UserService } from "../dist/modules/user/user.service.js";
 import { EmailAddress, InvalidEmailAddress, User } from "../dist/modules/user/domain/index.js"
-import { PlainPassword, HashedPassword, UnsafePassword, InvalidTOTPCode, TOTPCode, TOTPConfiguration } from "../dist/modules/auth/index.js"
+import { Password, PasswordConfiguration, UnsafePassword, InvalidTOTPCode, TOTPCode, TOTPConfiguration, Secret } from "../dist/modules/auth/index.js"
 import { NotFound } from "../dist/exceptions/NotFound.js"
 import { Unauthorized } from "../dist/exceptions/Unauthorized.js"
 
@@ -44,32 +44,33 @@ describe("A user", () => {
         const email = new EmailAddress("hans-christiaan@hansjovis.net");
         const user = userService.register(email, "hansjovis");
 
-        userService.activate(user.id, [HashedPassword.create("some-password")]);
-        expect(user.nrOfCredentials).toEqual(1);
+        userService.activate(user.id, [PasswordConfiguration.create("some-password")]);
+        // Two registered authentication methods: login code and password.
+        expect(user.auth.registered).toEqual(["password"]);
     });
 
     it("cannot activate their account when the user cannot be found", () => {
         const email = new EmailAddress("not-existing@hansjovis.net");
-        const activate = () => userService.activate(email, [HashedPassword.create("some-password")]);
+        const activate = () => userService.activate(email, [PasswordConfiguration.create("some-password")]);
         expect(activate).toThrow(NotFound);
     });
 
     it("cannot activate their account using an unsafe password", () => {
         const email = new EmailAddress("hans-christiaan@hansjovis.net");
-        const activate = () => userService.activate(email, [HashedPassword.create("unsafe")]);
+        const activate = () => userService.activate(email, [PasswordConfiguration.create("unsafe")]);
         expect(activate).toThrow(UnsafePassword);
     });
 
     it("cannot login when entering an email address for a non-existing account", () => {
         const email = new EmailAddress("not-existing@hansjovis.net");
-        const login = () => userService.login(email, [new PlainPassword("some-password")]);
+        const login = () => userService.login(email, [new Password("some-password")]);
         expect(login).rejects.toThrow(NotFound);
     });
 
     it("cannot login using an invalid email address", () => {
         const login = () => userService.login(
             new EmailAddress("invalid-email-address"), 
-            [new PlainPassword("some-password")]
+            [new Password("some-password")]
         );
         expect(login).toThrow(InvalidEmailAddress);
     });
@@ -78,9 +79,9 @@ describe("A user", () => {
         const email = new EmailAddress("hans-christiaan@hansjovis.net");
         const user = userService.register(email, "hansjovis");
 
-        userService.activate(user.id, [HashedPassword.create("some-password")]);
+        userService.activate(user.id, [PasswordConfiguration.create("some-password")]);
 
-        const login = () => userService.login(email, [new PlainPassword("some-other-invalid-password")]);
+        const login = () => userService.login(email, [new Password("some-other-invalid-password")]);
 
         expect(login).rejects.toThrow(Unauthorized);
     });
@@ -89,9 +90,9 @@ describe("A user", () => {
         const email = new EmailAddress("hans-christiaan@hansjovis.net");
         const user = userService.register(email, "hansjovis");
 
-        userService.activate(user.id, [HashedPassword.create("some-password")]);
+        userService.activate(user.id, [PasswordConfiguration.create("some-password")]);
 
-        const loggedInUser = await userService.login(email, [new PlainPassword("some-password")]);
+        const loggedInUser = await userService.login(email, [new Password("some-password")]);
 
         expect(loggedInUser).toEqual(user);
     });
@@ -105,16 +106,16 @@ describe("A user", () => {
 
         userService.activate(
             user.id, [
-                HashedPassword.create(password),
+                PasswordConfiguration.create(password),
                 new TOTPConfiguration({
                     accountName: user.email.toString(),
                     issuer: "Iedereen Welkom",
-                    secret
+                    secret: new Secret(secret),
                 }),
             ]
         );
 
-        const firstFactor = new PlainPassword(password);
+        const firstFactor = new Password(password);
         const code = await generate({ secret });
         const secondFactor = new TOTPCode(code);
 
@@ -132,16 +133,16 @@ describe("A user", () => {
 
         userService.activate(
             user.id, [
-                HashedPassword.create(password),
+                PasswordConfiguration.create(password),
                 new TOTPConfiguration({
                     accountName: user.email.toString(),
                     issuer: "Iedereen Welkom",
-                    secret
+                    secret: new Secret(secret),
                 }),
             ]
         );
 
-        const login = () => userService.login(email, [new PlainPassword(password), new TOTPCode("1234")]);
+        const login = () => userService.login(email, [new Password(password), new TOTPCode("1234")]);
 
         expect(login).toThrow(InvalidTOTPCode);
     });

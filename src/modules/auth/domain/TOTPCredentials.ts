@@ -1,50 +1,42 @@
 import { verify } from "otplib";
 
 import { CredentialsConfiguration, UnsafeCredentials } from "./Credentials.js";
+import { Secret } from "./Secret.js";
 
 export class InvalidTOTPCode extends Error {}
-
-export class InvalidTOTPSecret extends Error {}
-
-export class TOTPSecret {
-    static readonly regex = /^([A-Z2-7=]{8})+$/;
-
-    constructor(
-        private readonly value: string,
-    ) {
-        if (value.match(TOTPSecret.regex) === null) {
-            throw new InvalidTOTPSecret("TOTP secret must be base32 encoded.")
-        }
-    }
-
-    get secret() {
-        return this.value;
-    }
-}
 
 type ConfigProps = {
     issuer: string,
     accountName: string,
-    secret: string,
+    secret: Secret,
 }
 
 export class TOTPConfiguration implements CredentialsConfiguration {
     forType = "totp";
 
-    private readonly secret: TOTPSecret;
+    private readonly secret: Secret;
     private readonly accountName: string;
     private readonly issuer: string;
 
     constructor(props: ConfigProps) {
-        this.secret = new TOTPSecret(props.secret);
+        this.secret = props.secret;
         this.accountName = props.accountName;
         this.issuer = props.issuer;
+    }
+
+    static create(userName: string, issuer: string) {
+        const secret = Secret.create();
+        return new TOTPConfiguration({
+            secret: secret,
+            accountName: userName,
+            issuer,
+        });
     }
 
     async check(code: TOTPCode): Promise<boolean> {
         const result = await verify({
             token: code.value, 
-            secret: this.secret.secret,
+            secret: this.secret.value,
         });
         return result.valid;
     }

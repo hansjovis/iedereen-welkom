@@ -9,6 +9,7 @@
         "emitDecoratorMetadata": true,
         "jsx": "react",
         "declaration": true,
+        "sourceMap": true
     },
     "include": ["src"],
 }

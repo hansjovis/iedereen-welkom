@@ -3,7 +3,7 @@ import { Controller, Body, Post, Session, Get, Query, BadRequestException } from
 import { UserService, EmailAddress } from "../../modules/user/index.js";
 import { EmailService } from "../../modules/email/email.service.js";
 
-import { UnsafeCredentials, CredentialTypeMap } from "./domain/index.js";
+import { UnsafeCredentials, CredentialTypeMap, LoginCodeConfiguration } from "./domain/index.js";
 import { LoginCodeMail } from "./emails/login-code.email.js";
 
 type LoginRequestBody = {
@@ -51,7 +51,7 @@ export class AuthController {
 
         return {
             emailAddress: user.email.toString(),
-            activeCredentials: user.credentials.map(it => it.forType),
+            activeCredentials: user.auth.registered,
         };
     }
 
@@ -65,7 +65,9 @@ export class AuthController {
         }
         const email = new EmailAddress(emailAddress);
         const user = await this.userService.retrieveByEmail(email);
-        const loginCode = await user.generateLoginCode();
+        
+        const loginCodeConfig = user.auth.get("login-code") as LoginCodeConfiguration;
+        const loginCode = await loginCodeConfig.generate();
 
         this.emailService.send(new LoginCodeMail(user, loginCode));
     }
