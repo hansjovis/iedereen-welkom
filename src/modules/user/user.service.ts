@@ -30,18 +30,21 @@ export class UserService {
         }
         user.auth.clear();
         credentials.forEach(it => user.auth.configure(it));
+        this.logger.log(`Activated user with id ${userID}.`);
         return user;
     }
 
     async login(email: EmailAddress, credentials: UnsafeCredentials[]): Promise<User> {
         const user = this.userRepository.retrieveByEmail(email);
         if (user === undefined) {
+            this.logger.log(`User with email ${email} failed to log in (user not found).`);
             throw new NotFound(`User with email address ${email} could not be found.`);
         }
         if(await user.auth.check(...credentials) === false ) {
+            this.logger.log(`User with email ${email} failed to log in.`);
             throw new Unauthorized("Invalid credentials");
         };
-
+        this.logger.log(`User with email ${email} logged in.`);
         return user;
     }
 

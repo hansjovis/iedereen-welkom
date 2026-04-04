@@ -21,7 +21,6 @@ export class Secret {
     constructor(
         public readonly value: string,
     ) {
-        console.log(value.length);
         if (value.match(Secret.regex) === null) {
             throw new InvalidSecret("Secret must be base32 encoded.")
         }

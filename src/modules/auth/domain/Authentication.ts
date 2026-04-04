@@ -37,9 +37,7 @@ export class Authentication {
 
     async check(...credentials: UnsafeCredentials[]): Promise<boolean> {
         if (this.registered.length !== credentials.length) {
-            throw new Error(
-                `User has ${this.registered.length} authentication methods configured, but only ${credentials.length} were given.`
-            );
+            return false;
         }
         const all = await Promise.all(
             credentials.map(it => this.checkSingle(it))
@@ -50,7 +48,7 @@ export class Authentication {
     private async checkSingle(credential: UnsafeCredentials): Promise<boolean> {
         const config = this.configMap.get(credential.type);
         if (config === undefined) {
-            throw new Error(`User does not have a credential of type ${credential.type} configured.`);
+            return false;
         }
         return config.check(credential);
     }
