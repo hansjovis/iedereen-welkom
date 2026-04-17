@@ -48,7 +48,7 @@ export class UserService {
         return user;
     }
 
-    async retrieveByEmail(email: EmailAddress): Promise<User> {
+    async retrieveByEmail(email: EmailAddress): Promise<User | undefined> {
         return this.userRepository.retrieveByEmail(email);
     }
 }

@@ -1,6 +1,6 @@
 import { verify } from "otplib";
 
-import { CredentialsConfiguration, UnsafeCredentials } from "./Credentials.js";
+import { CredentialsConfiguration, InputConfiguration, UnsafeCredentials } from "./Credentials.js";
 import { Secret } from "./Secret.js";
 
 export class InvalidTOTPCode extends Error {}
@@ -39,6 +39,15 @@ export class TOTPConfiguration implements CredentialsConfiguration {
             secret: this.secret.value,
         });
         return result.valid;
+    }
+
+    inputConfiguration(): InputConfiguration {
+        return {
+            id: this.forType,
+            label: "2FA code",
+            description: "The Two-Factor Authentication code from your authenticator app.",
+            type: "text",
+        };
     }
 
     toString() {

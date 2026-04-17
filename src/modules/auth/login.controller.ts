@@ -1,0 +1,94 @@
+import { Controller, Body, Post, Session, Get, Query, Render, Inject, Res } from "@nestjs/common";
+import { Response as ExpressResponse } from "express";
+
+import { Response } from "../../response/Response.js";
+import { NotFound } from "../../exceptions/index.js";
+import { HandleResponse } from "../../response/HandleResponse.js";
+import { RedirectResponse } from "../../response/Redirect.js";
+
+import { UserService, EmailAddress, User } from "../user/index.js";
+import { EmailService } from "../email/email.service.js";
+
+import { UnsafeCredentials, CredentialTypeMap, LoginCodeConfiguration, InputConfiguration } from "./domain/index.js";
+import { LoginCodeMail } from "./emails/login-code.email.js";
+
+type LoginRequestBody = {
+    emailAddress: string,
+    [credentialType: string]: string,
+}
+
+type LoginCapabilitiesResponse = {
+    emailAddress?: string,
+    activeCredentials?: InputConfiguration[],
+}
+
+@Controller("/auth/login")
+export class LoginController {
+    constructor(
+        private readonly userService: UserService,
+        @Inject("EmailService") private readonly emailService: EmailService,
+    ) {}
+
+    @Post("/")
+    @Render("login")
+    @HandleResponse<string>
+    async login(
+        @Res() response: ExpressResponse,
+        @Body() loginDetails: LoginRequestBody,
+        @Session() session: Record<string, unknown>
+    ) {
+        const email = new EmailAddress(loginDetails.emailAddress);
+
+        const credentials: UnsafeCredentials[] = [];
+        for(const [type, value] of Object.entries(loginDetails)) {
+            if (type === "emailAddress") continue;
+            credentials.push(new CredentialTypeMap[type](value));
+        }
+
+        const user = await this.userService.login(email, credentials);
+        session.userID = user.id;
+
+        return new RedirectResponse(
+            "Successfully logged in!",
+            `/users/${encodeURIComponent(user.userName)}`
+        )
+    }
+
+    @Get("/")
+    @Render("login")
+    @HandleResponse<LoginCapabilitiesResponse>
+    async loginCapabilities(
+        @Res() response: ExpressResponse,
+        @Query("emailAddress") emailAddress?: string,
+    ): Promise<Response<LoginCapabilitiesResponse>> {
+        if (emailAddress === undefined) {
+            return new Response();
+        }
+        const email = new EmailAddress(emailAddress);
+        const user = await this.userService.retrieveByEmail(email);
+
+        if (user === undefined) {
+            throw new NotFound(`User with email address ${email} could not be found.`);
+        }
+
+        await this.sendLoginCode(user);
+
+        return new Response({
+            emailAddress: user.email.toString(),
+            activeCredentials: user.auth.registered,
+        });
+    }
+
+    // @todo: rate limit sending a login code to once per 10 minutes.
+    async sendLoginCode(
+        user: User,
+    ): Promise<void> {
+        const loginCodeConfig = user.auth.get("login-code") as LoginCodeConfiguration;
+        if (loginCodeConfig === undefined) {
+            return;
+        }
+
+        const loginCode = await loginCodeConfig.generate();
+        this.emailService.send(new LoginCodeMail(user, loginCode));
+    }
+}

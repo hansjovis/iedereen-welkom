@@ -1,4 +1,4 @@
-import { CredentialsConfiguration, UnsafeCredentials } from "./Credentials.js";
+import { CredentialsConfiguration, InputConfiguration, UnsafeCredentials } from "./Credentials.js";
 import { LoginCodeConfiguration } from "./LoginCodeCredentials.js";
 
 export class Authentication {
@@ -31,8 +31,8 @@ export class Authentication {
         return this.configMap.get(type);
     }
 
-    get registered(): string[] {
-        return [...this.configMap.keys()];
+    get registered(): InputConfiguration[] {
+        return [...this.configMap.values()].map(it => it.inputConfiguration());
     }
 
     async check(...credentials: UnsafeCredentials[]): Promise<boolean> {

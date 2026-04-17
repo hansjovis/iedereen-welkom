@@ -1,5 +1,10 @@
-import { HTTPException, StatusCode } from "./HTTPException.js";
+import { HTTPStatus } from "../common/HTTPStatus.js"
+import { HTTPException } from "./HTTPException.js";
 
-export class InvalidValue extends Error implements HTTPException {
-    statusCode = StatusCode.BadRequest;
+export class InvalidValue extends HTTPException {
+    constructor(
+        message: string,
+    ) {
+        super(HTTPStatus.BadRequest, message);
+    }
 }

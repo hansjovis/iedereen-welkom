@@ -1,4 +1,4 @@
-import { InvalidValue } from "exceptions/InvalidValue.js";
+import { InvalidValue } from "../../../exceptions/InvalidValue.js";
 
 export class InvalidEmailAddress extends InvalidValue {
     constructor(emailAddress: string) {

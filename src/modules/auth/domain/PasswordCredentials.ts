@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 
-import { UnsafeCredentials, CredentialsConfiguration } from "./Credentials.js";
+import { UnsafeCredentials, CredentialsConfiguration, InputConfiguration } from "./Credentials.js";
 
 export class UnsafePassword extends Error {}
 
@@ -13,12 +13,14 @@ export class Password implements UnsafeCredentials {
 export class PasswordConfiguration implements CredentialsConfiguration {
     forType = "password";
 
+    private static MIN_LENGTH = 12;
+
     constructor(private readonly hashedPassword: string) {}
 
     static create(password: string): PasswordConfiguration {
-        if (password.length < 12) {
+        if (password.length < PasswordConfiguration.MIN_LENGTH) {
             throw new UnsafePassword(
-                `Password should be at least 12 characters, but entered password was only ${password.length} characters long.`
+                `Password should be at least ${PasswordConfiguration.MIN_LENGTH} characters, but entered password was only ${password.length} characters long.`
             );
         }
         const salt = bcrypt.genSaltSync(12);
@@ -27,5 +29,14 @@ export class PasswordConfiguration implements CredentialsConfiguration {
 
     async check(password: Password): Promise<boolean> {
         return bcrypt.compareSync(password.value, this.hashedPassword);
+    }
+
+    inputConfiguration(): InputConfiguration {
+        return {
+            id: this.forType,
+            label: "Password",
+            description: "Your password.",
+            type: "text",
+        };
     }
 }

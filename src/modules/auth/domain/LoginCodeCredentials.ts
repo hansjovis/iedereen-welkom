@@ -1,7 +1,7 @@
 import { verify, generate } from "otplib";
 
 import { Duration } from "./Duration.js";
-import { CredentialsConfiguration, UnsafeCredentials } from "./Credentials.js";
+import { CredentialsConfiguration, InputConfiguration, UnsafeCredentials } from "./Credentials.js";
 import { Secret } from "./Secret.js";
 
 export class InvalidLoginCode extends Error {};
@@ -12,7 +12,7 @@ export class InvalidLoginCode extends Error {};
  * Use `TOTPCredentials` for TOTP using authenticators.
  */
 export class LoginCodeConfiguration implements CredentialsConfiguration {
-    forType: "login-code";
+    forType = "login-code";
 
     constructor(
         private readonly secret: Secret, 
@@ -37,6 +37,16 @@ export class LoginCodeConfiguration implements CredentialsConfiguration {
     async generate(): Promise<LoginCode> {
         const code = await generate({ secret: this.secret.value });
         return new LoginCode(code, this.validFor);
+    }
+
+    inputConfiguration(): InputConfiguration {
+        return {
+            id: this.forType,
+            label: "Login code",
+            description: "We sent a login code to your email address, please enter it below.",
+            type: "text",
+            pattern: "\\d{6}"
+        };
     }
 }
 
