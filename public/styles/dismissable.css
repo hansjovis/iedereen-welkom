@@ -1,0 +1,16 @@
+
+.hide {
+  opacity: 0;
+  transform: translate(100%, 0);
+  transition:
+    transform var(--hide-animation-time, 1000ms) linear,
+    opacity var(--hide-animation-time, 200ms) linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hide {
+        opacity: 0;
+        transition: 
+            opacity var(--hide-animation-time, 1000ms) linear;
+    }
+}

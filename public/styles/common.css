@@ -1,0 +1,115 @@
+:root {
+    --color-bg-0: hsl(from var(--color-bg-1) h s calc(l * 0.5));
+    --color-bg-1: hsl(220, 65%, 15%);
+    --color-bg-2: hsl(from var(--color-bg-1) h s calc(l * 2.0)); 
+    --color-bg-3: hsl(from var(--color-bg-1) h s calc(l * 4.0));
+
+    --color-fg: hsl(0, 36%, 96%);
+
+    --color-danger-bg: hsl(0, 72%, 56%);
+    --color-danger-fg: hsl(200, 50%, 100%);
+
+    --color-info-bg: hsl(200, 72%, 40%);
+    --color-info-fg: hsl(0, 50%, 100%);
+
+    --font-family-main: 'Helvetica', 'Arial', sans-serif;
+
+    --card-margin: 1rem;
+}
+
+body {
+    background: var(--color-bg-1);
+    color: var(--color-fg);
+    font-family: var(--font-family-main);
+}
+
+.container {
+    box-sizing: border-box;
+    max-width: 800px;
+    margin-inline: auto;
+}
+
+button, .button {
+    text-decoration: none;
+    border: 1px solid var(--color-fg);
+    border-radius: 4px;
+    padding: 0.4rem 0.8rem;
+    font-family: var(--font-family-main);
+    font-size: 1rem;
+    font-weight: 600;
+    background: var(--color-bg-1);
+    color: var(--color-fg);
+    cursor: pointer;
+
+    display: flex;
+    gap: 0.6rem;
+}
+
+button:hover, 
+button:focus, 
+.button:hover, 
+.button:focus {
+    background: var(--color-fg);
+    color: var(--color-bg-1);
+    border: 1px solid var(--color-bg-1);
+}
+
+.danger {
+    background-color: var(--color-danger-bg);
+    color: var(--color-danger-fg);
+    border-color: var(--color-danger-fg);
+}
+
+a {
+    color: var(--color-fg);
+}
+
+blockquote {
+    padding: 1rem;
+    font-size: 1.2rem;
+    border-inline-start: 2px solid var(--color-fg);
+}
+
+figure {
+    margin: 1rem;
+}
+
+figcaption {
+    margin-block-start: 0.5rem;
+    font-style: italic;
+}
+
+img {
+    display: block;
+}
+
+.landscape {
+    aspect-ratio: 1920 / 1080;
+}
+
+.portrait {
+    aspect-ratio: 1080 / 1920;
+}
+
+.square {
+    aspect-ratio: 1 / 1;
+}
+
+p.subtitle {
+    margin-block-start: 0;
+}
+
+.menu-bar {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.pill {
+    border-radius: 1rem;
+    max-inline-size: fit-content;
+    padding: 0.2rem 0.6rem;
+    border: 2px solid var(--color-bg-0);
+    background-color: var(--color-bg-3);
+    color: var(--color-bg-0);
+    font-weight: 600;
+}

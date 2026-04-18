@@ -1,4 +1,5 @@
 import { verify } from "otplib";
+import QRCode from "qrcode";
 
 import { CredentialsConfiguration, InputConfiguration, UnsafeCredentials } from "./Credentials.js";
 import { Secret } from "./Secret.js";
@@ -14,7 +15,7 @@ type ConfigProps = {
 export class TOTPConfiguration implements CredentialsConfiguration {
     forType = "totp";
 
-    private readonly secret: Secret;
+    public readonly secret: Secret;
     private readonly accountName: string;
     private readonly issuer: string;
 
@@ -48,6 +49,10 @@ export class TOTPConfiguration implements CredentialsConfiguration {
             description: "The Two-Factor Authentication code from your authenticator app.",
             type: "text",
         };
+    }
+
+    async toQRCode(): Promise<string> {
+        return QRCode.toDataURL(this.toString());
     }
 
     toString() {

@@ -6,7 +6,7 @@ export class UUID implements Equatable<UUID> {
 
     public readonly value: string;
     constructor(value: string) {
-        if (value.match(UUID.regex) === null) {
+        if (value.match(UUID.regex) === null && value !== undefined) {
             throw new InvalidValue(`"${value}" is an invalid UUID.`);
         } 
         this.value = value;

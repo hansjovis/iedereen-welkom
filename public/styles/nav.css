@@ -1,0 +1,30 @@
+nav.nav-bar {
+    border-radius: 0.2rem;
+    border: 1px solid;
+    border-color: var(--color-bg-3);
+
+    margin-block-start: 0.5rem;
+
+    padding: 0.5rem;
+
+    max-width: fit-content;
+}
+
+nav.nav-bar ul {
+    display: flex;
+    list-style: none;
+}
+
+nav.nav-bar a {
+    display: block;
+    padding: 0.2rem 1rem;
+}
+
+nav.nav-bar li:not(:last-child) {
+    border-inline-end: 1px solid;
+    border-color: var(--color-bg-3);
+}
+
+nav.nav-bar a:hover, nav.nav-bar a:focus {
+    background-color: var(--color-bg-3);
+}  

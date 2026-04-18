@@ -19,12 +19,13 @@ import { EmailAddress } from "./domain/EmailAddress.js";
     ],
     exports: [
         UserService,
+        "UserRepository"
     ]
 })
 export class UserModule {
     constructor(
         @Inject("UserRepository") users: UserRepository
     ) {
-        users.save(User.create(new EmailAddress("hc.braun@protonmail.com"), "hansjovis"));    
+        users.create(User.create(new EmailAddress("hc.braun@protonmail.com"), "hansjovis"));    
     }
 }

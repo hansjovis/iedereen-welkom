@@ -1,0 +1,61 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 0.5rem 0.8rem;
+    text-align: start;
+}
+
+tr {
+    border-block-end: 2px solid var(--color-a3);
+}
+
+@media (width <= 500px) {
+    .menu-bar {
+        display: grid;
+    }
+}
+
+@media (width <= 800px) {
+    th {
+        display: none;
+    }
+
+    td {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+    }
+
+    td::before {
+        content: attr(data-header)':';
+        font-weight: 600;
+    }
+}
+
+.form-row {
+    margin-top: 0.5rem;
+}
+
+label {
+    display: block;
+    margin-block-end: 0.2rem;
+}
+
+input, textarea {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.5rem;
+}
+
+input[type="radio"], input[type="checkbox"] {
+    display: inline;
+    width: auto;
+}
+
+.add-block {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 1rem;
+}

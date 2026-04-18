@@ -1,0 +1,118 @@
+.card {
+    margin-block-start: var(--card-margin);
+    padding: 1rem;
+    position: relative;
+    border-radius: 4px;
+    background-color: var(--color-bg-2);
+    box-shadow: 0 0 1px 2px var(--color-bg-0);
+}
+
+.card footer {
+    border-top: 1px solid;
+    margin-block-start: auto;
+    padding-block-start: 1rem;
+}
+
+.card header {
+    display: flex;
+    align-items: center;
+}
+
+.card header img {
+    width: 3rem;
+    margin-inline-end: 1rem;
+    aspect-ratio: 1 / 1;
+}
+
+.card hgroup > * {
+    margin-block: 0;
+}
+
+.card-invis {
+    margin-block-start: var(--card-margin);
+    padding: 1rem;
+}
+
+.card-body {
+    margin-block-start: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.card-body:not(:last-child) {
+    margin-block-end: 1rem;
+}
+
+/* Danger card */
+
+.card.danger {
+    background: var(--color-danger-bg);
+    color: var(--color-danger-fg);
+    border: 1px solid var(--color-danger-fg);
+}
+
+.card.danger>header::before {
+    content: url("../images/icons/triangle-exclamation-solid-full-white.svg");
+    fill: white;
+    width: 3rem;
+    padding-inline: 0.5rem;
+    padding-block-start: 0.5rem;
+}
+
+/* Info card */
+
+.card.info {
+    background: var(--color-info-bg);
+    color: var(--color-info-fg);
+    border: 1px solid var(--color-info-fg);
+}
+
+.card.info>header::before {
+    content: url("../images/icons/circle-info-solid-full-white.svg");
+    fill: white;
+    width: 3rem;
+    padding-inline: 0.5rem;
+    padding-block-start: 0.5rem;
+}
+
+/* Hero card */
+
+.card.hero {
+    padding: 0;
+}
+
+.card.hero header {
+    display: grid;
+}
+
+.card.hero header img {
+    width: 100%;
+    aspect-ratio: 1920 / 1080;
+    border: 0;
+}
+
+.card.hero header>* {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.card.hero header hgroup {
+    padding: 1rem;
+    align-self: flex-end;
+    background: linear-gradient(
+        to top,
+        hsla(0, 0%, 0%, 0.9),
+        hsla(0, 0%, 0%, 0.7),
+        hsla(0, 0%, 0%, 0)
+    );
+}
+
+.card.hero .card-body {
+    margin: 1rem;
+}
+
+.card.hero footer {
+    margin-inline: 1rem;
+    margin-block-end: 1rem;
+}

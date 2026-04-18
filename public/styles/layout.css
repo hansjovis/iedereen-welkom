@@ -1,0 +1,53 @@
+
+/* Columns */
+
+.columns {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: repeat(var(--nr-cols, 3), 1fr);
+    grid-template-rows: auto;
+    gap: 1rem;
+}
+
+@media screen and (max-width: 600px) {
+    .columns {
+        grid-auto-flow: row;
+        grid-template-columns: auto;
+        gap: 0;
+    }
+}
+
+/* Float utility classes */
+
+.float-end {
+    float: inline-end;
+}
+
+.float-start {
+    float: inline-start;
+}
+
+/* Width utility classes */
+
+.full-width {
+    width: 100%;
+}
+
+.half-width {
+    width: 50%;
+}
+
+/* Positioning utility classes */
+
+.top-right {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+}
+
+/* Flex-box utility classes */
+
+.flex {
+    display: flex;
+    gap: 0.25rem;
+}

@@ -4,84 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auth - Login</title>
-    <style>
-        body {
-            height: 90vh;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-        h1, h2, h3, h4, h5, h6, p {
-            margin: 0;
-            padding: 0;
-        }
-        p {
-            margin-block-start: 0.5rem;
-        }
-        footer {
-            margin-block-start: 0.5rem;
-        }
-        .center-content {
-            display: grid;
-            place-content: center;
-        }
-        .card {
-            padding: 8px 16px;
-            margin: 8px;
-            border: 1px solid gray;
-            border-radius: 4px;
-        }
-        label, input {
-            display: block;
-        }
-        .input-row {
-            margin-block-start: 0.5rem;
-        }
-        #error {
-            position: absolute;
-            background-color: darkred;
-            color: white;
-        }
-        #notification {
-            position: absolute;
-            background-color: green;
-            color: white;
-        }
-        form {
-            width: 300px;
-            max-width: 300px;
-        }
-        input {
-            padding: 4px 8px;
-        }
-    </style>
+    <!-- Styles -->
+    <link rel="stylesheet" href="/styles/reset.css">
+    <link rel="stylesheet" href="/styles/layout.css">
+    <link rel="stylesheet" href="/styles/common.css">
+    <link rel="stylesheet" href="/styles/card.css">
+    <link rel="stylesheet" href="/styles/sizing.css">
+    <link rel="stylesheet" href="/styles/dismissable.css">
+    <link rel="stylesheet" href="/styles/nav.css">
+    <link rel="stylesheet" href="/styles/form.css">
 </head>
 <body class="center-content">
     {{#if error }}
-    <div id="error" class="card">
+    <div id="error" class="danger card container">
         <p><b>Error</b>: {{ error }}</p>
     </div>
     {{/if}}
     {{#if success }}
-    <div id="notification" class="card">
+    <div id="notification" class="info card">
         <p><b>Success</b>: {{ success }}</p>
     </div>
     {{/if}}
-    <form class="card" {{#if activeCredentials}} method="POST" {{/if}}>
+    <form class="card container" {{#if activeCredentials}} method="POST" {{/if}}>
         <header>
+            <img src="/icons/login.svg" class="icon" alt=""/>
             <h1>Log in</h1>
         </header>
-        <div class="input-row">
-            <label for="emailAddress">Email address</label>
-            <input type="email" name="emailAddress" id="emailAddress" value="{{emailAddress}}">
+        <div class="card-body">
+            <div class="input-row">
+                <label for="emailAddress">Email address</label>
+                <input type="email" name="emailAddress" id="emailAddress" value="{{emailAddress}}">
+            </div>
+            {{#each activeCredentials}}
+            <div class="input-row">
+                <label for="{{this.id}}">{{this.label}}</label>
+                <p>{{this.description}}</p>
+                <input type="{{this.type}}" {{#if this.pattern}}pattern="{{this.pattern}}"{{/if}} name="{{this.id}}" id="{{this.id}}" value="{{this.value}}">
+            </div>
+            {{/each}}
         </div>
-        {{#each activeCredentials}}
-        <div class="input-row">
-            <label for="{{this.id}}">{{this.label}}</label>
-            <p>{{this.description}}</p>
-            <input type="{{this.type}}" {{#if this.pattern}}pattern="{{this.pattern}}"{{/if}} name="{{this.id}}" id="{{this.id}}" value="{{this.value}}">
-        </div>
-        {{/each}}
         <footer>
-            <button type="submit">Log in</button>
+            <button type="submit">
+                <img src="/icons/login.svg" class="icon" alt=""/>
+                Log in
+            </button>
         </footer>
     </form>
 </body>

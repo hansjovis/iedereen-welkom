@@ -46,7 +46,15 @@ export class LoginController {
         }
 
         const user = await this.userService.login(email, credentials);
-        session.userID = user.id;
+        session.userID = user.id.toString();
+
+        if (user.auth.registered.length === 1) {
+            // User has less than two factors active, force them to add more login factors.
+            return new RedirectResponse(
+                "Successfully logged in! Please add more login credentials to keep you account secure.",
+                `/auth/configure`
+            );
+        }
 
         return new RedirectResponse(
             "Successfully logged in!",

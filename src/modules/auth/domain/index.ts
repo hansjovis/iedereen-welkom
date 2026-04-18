@@ -1,6 +1,6 @@
-import { LoginCode } from "./LoginCodeCredentials.js";
-import { Password } from "./PasswordCredentials.js";
-import { TOTPCode } from "./TOTPCredentials.js";
+import { LoginCode, LoginCodeConfiguration } from "./LoginCodeCredentials.js";
+import { Password, PasswordConfiguration } from "./PasswordCredentials.js";
+import { TOTPCode, TOTPConfiguration } from "./TOTPCredentials.js";
 
 export * from "./Authentication.js";
 export * from "./Credentials.js";
@@ -15,4 +15,10 @@ export const CredentialTypeMap = {
     "password": Password,
     "totp": TOTPCode,
     "login-code": LoginCode,
+}
+
+export const CredentialConfigurationTypeMap = {
+    "password": PasswordConfiguration,
+    "totp": TOTPConfiguration,
+    "login-code": LoginCodeConfiguration,
 }

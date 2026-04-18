@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth - Configure</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="/styles/reset.css">
+    <link rel="stylesheet" href="/styles/layout.css">
+    <link rel="stylesheet" href="/styles/common.css">
+    <link rel="stylesheet" href="/styles/card.css">
+    <link rel="stylesheet" href="/styles/sizing.css">
+    <link rel="stylesheet" href="/styles/dismissable.css">
+    <link rel="stylesheet" href="/styles/nav.css">
+    <link rel="stylesheet" href="/styles/form.css">
+</head>
+<body>
+    {{#if error }}
+    <div id="error" class="danger card container">
+        <p><b>Error</b>: {{ error }}</p>
+    </div>
+    {{/if}}
+    <form class="container card" method="post">
+        <header>
+            <h1>Configure your login credentials</h1>
+        </header>
+        <div class="card-body">
+            <p>
+                Hello {{ userName }}. 
+                To keep your account secure, we need you to add (extra) login credentials to your account.
+                Please provide them using the form below.
+            </p>
+            <div class="input-row">
+                <label for="password">Password</label>
+                <p>Enter your new password.</p>
+                <input type="text" name="password" id="password">
+            </div>
+            <div class="input-row">
+                <label for="totp">2FA (using an authentication app)</label>
+                <p>
+                    Scan the QR code below with your authentication app of choice. 
+                    Or add the following secret manually
+                </p>
+                <input type="text" name="totp" id="totp" readonly="" style="color: black;" value="{{ totp.secret }}"/>
+                <figure style="margin-inline: auto;">
+                    <img src="{{ totp.QRCode }}" alt="2FA app QR code." style="max-width: 512px;">
+                </figure>
+            </div>
+        </div>
+        <footer>
+            <button type="submit">Submit</button>
+        </footer>
+    </form>
+</body>
+</html>

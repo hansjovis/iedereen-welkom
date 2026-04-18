@@ -6,7 +6,7 @@ import { Response } from "./Response.js";
 
 type Handler<T> = (response: ExpressResponse, ...args: unknown[]) => Promise<Response<T>>;
 
-const logger = new Logger("HandleExceptions");
+const logger = new Logger("HandleResponse");
 
 export function HandleResponse<T>(target: object, propertyKey: string, descriptor: TypedPropertyDescriptor<Handler<T>>) {
     const originalMethod = descriptor.value as Handler<unknown>;
