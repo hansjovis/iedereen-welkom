@@ -29,4 +29,9 @@ export class InMemoryUserRepository implements UserRepository {
     retrieveById(id: UUID): User | undefined {
         return this.users.get(id.toString());
     }
+
+    retrieveByUserName(userName: string): User | undefined {
+        return this.users.values()
+            .find(user => user.userName === userName);
+    }
 }

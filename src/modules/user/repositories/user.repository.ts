@@ -5,4 +5,5 @@ export interface UserRepository {
     save(user: User): void;
     retrieveByEmail(email: EmailAddress): User|undefined;
     retrieveById(id: UUID): User|undefined;
+    retrieveByUserName(userName: string): User | Promise<User>;
 }

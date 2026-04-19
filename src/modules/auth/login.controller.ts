@@ -47,6 +47,7 @@ export class LoginController {
         if (user.auth.registered.length === 1) {
             // User has less than two factors active, force them to add more login factors.
             response.redirect(HTTPStatus.SeeOther.code, "/auth/configure");
+            return;
         }
         response.redirect(HTTPStatus.SeeOther.code, `/users/${encodeURIComponent(user.userName)}`);
     }

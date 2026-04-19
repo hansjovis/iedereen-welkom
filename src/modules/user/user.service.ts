@@ -51,4 +51,25 @@ export class UserService {
     async retrieveByEmail(email: EmailAddress): Promise<User | undefined> {
         return this.userRepository.retrieveByEmail(email);
     }
+
+    async retrieveByUserName(userName: string): Promise<User | undefined> {
+        return this.userRepository.retrieveByUserName(userName);
+    }
+
+    async retrieveUserFromSession(session: Record<string, unknown>): Promise<User> {
+        const uuidString = session.userID as string;
+        if (uuidString === undefined) {
+            throw new Unauthorized("You are not authorized to view this page.");
+        }
+
+        const user = this.userRepository.retrieveById(
+            new UUID(uuidString)
+        );
+        
+        if (user === undefined) {
+            throw new NotFound(`User with id ${uuidString} could not be found.`);
+        }
+
+        return user;
+    }
 }

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth - Login</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="/styles/reset.css">
+    <link rel="stylesheet" href="/styles/layout.css">
+    <link rel="stylesheet" href="/styles/common.css">
+    <link rel="stylesheet" href="/styles/card.css">
+    <link rel="stylesheet" href="/styles/sizing.css">
+    <link rel="stylesheet" href="/styles/dismissable.css">
+    <!-- Scripts -->
+    <script src="/scripts/dismissable.js"></script>
+</head>
+<body class="center-content">
+    {{#if error }}
+    <div id="error" class="danger card container dismissable">
+        <header>
+            <p><b>Error</b>: {{ error }}</p>
+        </header>
+    </div>
+    {{/if}}
+    <div class="card container">
+        <header>
+            <h1>{{ userName }}</h1>
+        </header>
+    </div>
+</body>
+</html>

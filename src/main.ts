@@ -9,7 +9,7 @@ import session from "express-session";
 import flash from "connect-flash";
 
 import { AppModule } from "./modules/app.module.js";
-import { ErrorHandler, HTTPExceptionHandler } from "./handleError.js";
+import { HTTPExceptionHandler } from "./handleError.js";
 
 async function bootstrap() {
     loadEnvFile();
@@ -29,7 +29,6 @@ async function bootstrap() {
         next();
     });
     app.useGlobalFilters(
-        new ErrorHandler(),
         new HTTPExceptionHandler(),
     );
 
