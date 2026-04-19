@@ -1,10 +1,8 @@
-import { Controller, Body, Post, Session, Get, Query, Render, Inject, Res } from "@nestjs/common";
+import { Controller, Body, Post, Session, Get, Query, Inject, Res, Render } from "@nestjs/common";
 import { Response as ExpressResponse } from "express";
 
-import { Response } from "../../response/Response.js";
+import { HTTPStatus } from "../../common/HTTPStatus.js";
 import { NotFound } from "../../exceptions/index.js";
-import { HandleResponse } from "../../response/HandleResponse.js";
-import { RedirectResponse } from "../../response/Redirect.js";
 
 import { UserService, EmailAddress, User } from "../user/index.js";
 import { EmailService } from "../email/email.service.js";
@@ -30,8 +28,6 @@ export class LoginController {
     ) {}
 
     @Post("/")
-    @Render("login")
-    @HandleResponse<string>
     async login(
         @Res() response: ExpressResponse,
         @Body() loginDetails: LoginRequestBody,
@@ -50,27 +46,18 @@ export class LoginController {
 
         if (user.auth.registered.length === 1) {
             // User has less than two factors active, force them to add more login factors.
-            return new RedirectResponse(
-                "Successfully logged in! Please add more login credentials to keep you account secure.",
-                `/auth/configure`
-            );
+            response.redirect(HTTPStatus.SeeOther.code, "/auth/configure");
         }
-
-        return new RedirectResponse(
-            "Successfully logged in!",
-            `/users/${encodeURIComponent(user.userName)}`
-        )
+        response.redirect(HTTPStatus.SeeOther.code, `/users/${encodeURIComponent(user.userName)}`);
     }
 
     @Get("/")
     @Render("login")
-    @HandleResponse<LoginCapabilitiesResponse>
     async loginCapabilities(
-        @Res() response: ExpressResponse,
         @Query("emailAddress") emailAddress?: string,
-    ): Promise<Response<LoginCapabilitiesResponse>> {
+    ): Promise<LoginCapabilitiesResponse> {
         if (emailAddress === undefined) {
-            return new Response();
+            return {};
         }
         const email = new EmailAddress(emailAddress);
         const user = await this.userService.retrieveByEmail(email);
@@ -81,10 +68,10 @@ export class LoginController {
 
         await this.sendLoginCode(user);
 
-        return new Response({
+        return {
             emailAddress: user.email.toString(),
             activeCredentials: user.auth.registered,
-        });
+        };
     }
 
     // @todo: rate limit sending a login code to once per 10 minutes.

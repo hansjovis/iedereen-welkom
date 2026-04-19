@@ -1,25 +1,16 @@
-import { Controller, Get, Inject, Logger, Render, Session, Res, Post, Body } from "@nestjs/common";
-import { Response as ExpressResponse } from "express";
+import { Controller, Get, Inject, Logger, Render, Session, Post, Body, Res } from "@nestjs/common";
+import { Response } from "express";
 
-import { UserRepository } from "../../modules/user/repositories/user.repository.js";
-import { User, UUID } from "../../modules/user/index.js";
-import { Unauthorized } from "../../exceptions/Unauthorized.js";
-import { NotFound } from "../../exceptions/NotFound.js";
-import { HandleResponse } from "../../response/HandleResponse.js";
-import { Response } from "../../response/Response.js";
+import { UserRepository } from "../user/repositories/user.repository.js";
+import { User, UUID } from "../user/index.js";
+import { HTTPStatus } from "../../common/HTTPStatus.js";
+import { Unauthorized, NotFound } from "../../exceptions/index.js";
 
-import { TOTPConfiguration, CredentialConfigurationTypeMap } from "./domain/index.js";
+import { TOTPConfiguration, PasswordConfiguration, Secret } from "./domain/index.js";
 
 type ConfigurationRequestBody = {
-    [credentialType: string]: string,
-}
-
-type ConfigureResponse = {
-    userName: string,
-    totp: {
-        QRCode: string,
-        secret: string,
-    }
+    password?: string,
+    totp?: string,
 }
 
 @Controller("/auth/configure")
@@ -32,41 +23,51 @@ export class ConfigureController {
 
     @Get("/")
     @Render("configure")
-    @HandleResponse<ConfigureResponse>
     async configure(
-        @Res() response: ExpressResponse,
         @Session() session: Record<string, unknown>,
     ) {
         const user = await this.retrieveUserFromSession(session);
 
-        const totpConfig = TOTPConfiguration.create(user.userName, "Hansjovis Auth");
+        const totpConfig = TOTPConfiguration.generate(user.userName, "Hansjovis Auth");
 
-        return new Response({
+        return {
             userName: user.userName,
             totp: {
                 QRCode: await totpConfig.toQRCode(),
                 secret: totpConfig.secret.toString(),
             },
-        });
+        }
     }
 
     @Post("/")
-    @HandleResponse<string>
     async saveConfiguration(
-        @Res() response: ExpressResponse,
+        @Res() response: Response,
         @Body() configurationDetails: ConfigurationRequestBody,
         @Session() session: Record<string, unknown>,
     ) {
         const user = await this.retrieveUserFromSession(session);
 
         user.auth.clear();
-        for (const [key, value] of Object.entries(configurationDetails)) {
-            user.auth.configure(new CredentialConfigurationTypeMap[key](value));
+        
+        if (configurationDetails.password) {
+            user.auth.configure(
+                PasswordConfiguration.create(configurationDetails.password)
+            );
+        }
+
+        if (configurationDetails.totp) {
+            user.auth.configure(
+                TOTPConfiguration.create({
+                    secret: new Secret(configurationDetails.totp),
+                    issuer: "Hansjovis Auth",
+                    accountName: user.userName,
+                }),
+            );
         }
 
         this.userRepository.save(user);
 
-        return new Response("Successfully registered login credentials.");
+        response.redirect(HTTPStatus.SeeOther.code, `/users/${encodeURIComponent(user.userName)}`);
     }
 
     async retrieveUserFromSession(session: Record<string, unknown>): Promise<User> {

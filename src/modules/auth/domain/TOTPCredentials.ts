@@ -25,7 +25,11 @@ export class TOTPConfiguration implements CredentialsConfiguration {
         this.issuer = props.issuer;
     }
 
-    static create(userName: string, issuer: string) {
+    static create(props: ConfigProps) {
+        return new TOTPConfiguration(props);
+    }
+
+    static generate(userName: string, issuer: string) {
         const secret = Secret.create();
         return new TOTPConfiguration({
             secret: secret,

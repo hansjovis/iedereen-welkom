@@ -22,6 +22,10 @@ export class HTTPStatus {
         }
     }
 
+    equals(other: HTTPStatus): boolean {
+        return other.code === this.code;
+    }
+
     toJSON() {
         return {
             code: this.code,
