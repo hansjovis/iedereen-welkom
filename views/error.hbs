@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auth - Login</title>
+    <title>Auth - Error</title>
     <!-- Styles -->
     <link rel="stylesheet" href="/styles/reset.css">
     <link rel="stylesheet" href="/styles/layout.css">
     <link rel="stylesheet" href="/styles/common.css">
     <link rel="stylesheet" href="/styles/card.css">
-    <link rel="stylesheet" href="/styles/dismissable.css">
 </head>
 <body class="center-content">
     {{#if error }}
     <div id="error" class="danger card container">
+        <h1>{{ status.code }} - {{ status.message }}</h1>
         <p><b>Error</b>: {{ error }}</p>
         <p>You will be redirected to <a href="{{ redirectTo }}">{{ redirectTo }}</a> shortly.</p>
     </div>

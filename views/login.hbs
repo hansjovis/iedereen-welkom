@@ -13,12 +13,15 @@
     <link rel="stylesheet" href="/styles/dismissable.css">
     <link rel="stylesheet" href="/styles/nav.css">
     <link rel="stylesheet" href="/styles/form.css">
+    <!-- Scripts -->
+    <script src="/scripts/dismissable.js"></script>
 </head>
 <body class="center-content">
     {{#if error }}
-    <div id="error" class="danger card container">
-        <p><b>Error</b>: {{ error }}</p>
-        <p>You will be redirected to <a href="{{ redirectTo }}">{{ redirectTo }}</a> shortly.</p>
+    <div id="error" class="danger card container dismissable">
+        <header>
+            <p><b>Error</b>: {{ error }}</p>
+        </header>
     </div>
     {{/if}}
     {{#if success }}

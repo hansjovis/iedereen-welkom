@@ -20,11 +20,14 @@ export class HTTPExceptionHandler implements ExceptionFilter {
         }
 
         if (response.headersSent === false) {
-            response.setHeader("Refresh", `3; url=${redirectTo}`);
+            response.setHeader("Refresh", `2.5; url=${redirectTo}`);
         }
+
+        request.flash("error", exception.message);
 
         response.status(exception.status.code);
         response.render("error", {
+            status: exception.status.toJSON(),
             error: exception.message,
             redirectTo,
         });
@@ -36,11 +39,11 @@ export class ErrorHandler implements ExceptionFilter {
     private readonly logger = new Logger(HTTPExceptionHandler.name);
 
     private getRedirect(request: Request, exception: Error) {
-    if (exception instanceof HttpException && exception.getStatus() === HTTPStatus.NotFound.code) {
-        return "/auth/login";
+        if (exception instanceof HttpException && exception.getStatus() === HTTPStatus.NotFound.code) {
+            return "/auth/login";
+        }
+        return request.path;
     }
-    return request.path;
-}
 
     catch(exception: Error, host: ArgumentsHost) {
         const request: Request = host.switchToHttp().getRequest();
@@ -55,11 +58,14 @@ export class ErrorHandler implements ExceptionFilter {
 
         const redirectTo = this.getRedirect(request, exception);
         if (response.headersSent === false) {
-            response.setHeader("Refresh", `3; url=${redirectTo}`);
+            response.setHeader("Refresh", `2.5; url=${redirectTo}`);
         }
+
+        request.flash("error", exception.message);
 
         response.status(status);
         response.render("error", {
+            status: HTTPStatus.byCode(status).toJSON(),
             error: exception.message,
             redirectTo,
         });

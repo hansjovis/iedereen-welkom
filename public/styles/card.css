@@ -53,9 +53,8 @@
 }
 
 .card.danger>header::before {
-    content: url("../images/icons/triangle-exclamation-solid-full-white.svg");
+    content: url("/icons/error.svg");
     fill: white;
-    width: 3rem;
     padding-inline: 0.5rem;
     padding-block-start: 0.5rem;
 }

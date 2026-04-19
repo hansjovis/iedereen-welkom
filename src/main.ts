@@ -4,8 +4,9 @@ import { loadEnvFile } from "node:process";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { NestFactory } from "@nestjs/core";
 
+import { static as expressStatic } from "express";
 import session from "express-session";
-import { static as expressStatic, NextFunction, Request, Response } from "express";
+import flash from "connect-flash";
 
 import { AppModule } from "./modules/app.module.js";
 import { ErrorHandler, HTTPExceptionHandler } from "./handleError.js";
@@ -22,7 +23,9 @@ async function bootstrap() {
         resave: false,
         saveUninitialized: false,
     }));
-    app.use((req: Request, res: Response, next: NextFunction) => {
+    app.use(flash());
+    app.use((req, res, next) => {
+        res.locals.error = req.flash("error");
         next();
     });
     app.useGlobalFilters(
