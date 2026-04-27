@@ -1,8 +1,9 @@
 import { Module } from "@nestjs/common";
+
+import { UserModule } from "../user/index.js";
+import { EmailModule, NoopEmailService } from "../email/index.js";
+
 import { LoginController } from "./login.controller.js";
-import { UserModule } from "../user/user.module.js";
-import { EmailModule } from "../email/email.module.js";
-import { NoopEmailService } from "../email/noop.email-service.js";
 import { ConfigureController } from "./configure.controller.js";
 
 @Module({

@@ -45,8 +45,9 @@ describe("A user", () => {
         const user = userService.register(email, "hansjovis");
 
         userService.activate(user.id, [PasswordConfiguration.create("some-password")]);
-        // Two registered authentication methods: login code and password.
-        expect(user.auth.registered).toEqual(["password"]);
+        // One registered authentication methods: password.
+        expect(user.auth.registered).toHaveLength(1);
+        expect(user.auth.registered[0].id).toEqual("password");
     });
 
     it("cannot activate their account when the user cannot be found", () => {

@@ -6,8 +6,8 @@ export class MockUserRepository implements UserRepository {
     private readonly users: Map<string, User> = new Map();
 
     save(user: User): void {
-        if ([...this.users.values()].some(it => it.email === user.email)) {
-            throw new Error(`Only one user with email ${user.email} allowed.`);
+        if (this.users.has(user.id.toString()) === false) {
+            throw new Error(`User with id ${user.id} could not be found.`);
         }
         this.users.set(user.id.toString(), user);
     }
@@ -22,5 +22,17 @@ export class MockUserRepository implements UserRepository {
 
     clear(): void {
         this.users.clear();
+    }
+
+    create(user: User): void {
+        if ([...this.users.values()].some(it => it.email === user.email)) {
+            throw new Error(`Only one user with email ${user.email} allowed.`);
+        }
+        this.users.set(user.id.toString(), user);
+    }
+
+    retrieveByUserName(userName: string) {
+        return [...this.users.values()]
+            .find(user => user.userName === userName);
     }
 }

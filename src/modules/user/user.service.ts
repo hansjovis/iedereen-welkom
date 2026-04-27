@@ -18,7 +18,7 @@ export class UserService {
 
     register(email: EmailAddress, userName: string): User {
         const user = User.create(email, userName);
-        this.userRepository.save(user);
+        this.userRepository.create(user);
         this.logger.log(`Registered user with email ${email}.`);
         return user;
     }

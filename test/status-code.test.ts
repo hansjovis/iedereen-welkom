@@ -1,11 +1,11 @@
 import { describe, it } from "node:test";
 import { expect } from "expect";
 
-import { InvalidStatusCode, StatusCode } from "../dist/exceptions/HTTPException.js";
+import { HTTPStatus, InvalidHTTPStatus } from "../dist/common/HTTPStatus.js";
 
 describe("A status code", () => {
     it("cannot be created with an invalid code", () => {
-        const create = () => new StatusCode(600, "Invalid code");
-        expect(create).toThrow(InvalidStatusCode);
+        const create = () => new HTTPStatus(600, "Invalid code");
+        expect(create).toThrow(InvalidHTTPStatus);
     })
 });

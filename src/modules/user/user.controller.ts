@@ -1,7 +1,9 @@
 import { Body, Controller, Get, Logger, Param, Post, Render, Session } from "@nestjs/common";
+
 import { Unauthorized } from "../../exceptions/Unauthorized.js";
+
 import { UserService } from "./user.service.js";
-import { EmailAddress } from "./domain/EmailAddress.js";
+import { EmailAddress } from "./domain/index.js";
 
 type CreateUserRequestBody = {
     email: string,
