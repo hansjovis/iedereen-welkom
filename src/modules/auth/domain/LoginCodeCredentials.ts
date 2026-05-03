@@ -1,10 +1,12 @@
 import { verify, generate } from "otplib";
 
+import { InvalidValue } from "../../../exceptions/InvalidValue.js";
+
 import { Duration } from "./Duration.js";
-import { CredentialsConfiguration, InputConfiguration, UnsafeCredentials } from "./Credentials.js";
+import { CredentialsConfiguration, UnsafeCredentials } from "./Credentials.js";
 import { Secret } from "./Secret.js";
 
-export class InvalidLoginCode extends Error {};
+export class InvalidLoginCode extends InvalidValue {};
 
 /**
  * Time-based one time password, to be used for sending by email or other means.
@@ -12,7 +14,7 @@ export class InvalidLoginCode extends Error {};
  * Use `TOTPCredentials` for TOTP using authenticators.
  */
 export class LoginCodeConfiguration implements CredentialsConfiguration {
-    forType = "login-code";
+    forType = "login_code";
 
     constructor(
         private readonly secret: Secret, 
@@ -38,20 +40,10 @@ export class LoginCodeConfiguration implements CredentialsConfiguration {
         const code = await generate({ secret: this.secret.value });
         return new LoginCode(code, this.validFor);
     }
-
-    inputConfiguration(): InputConfiguration {
-        return {
-            id: this.forType,
-            label: "Login code",
-            description: "We sent a login code to your email address, please enter it below.",
-            type: "text",
-            pattern: "\\d{6}"
-        };
-    }
 }
 
 export class LoginCode implements UnsafeCredentials {
-    type = "login-code";
+    type = "login_code";
     constructor(
         public readonly value: string,
         public readonly validFor: Duration,

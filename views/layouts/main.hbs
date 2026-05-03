@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Page title and description -->
+    <title>{{ page.title }} - {{ app.name }}</title>
+    <meta name="description" content="{{ page.description }}">
+
+    <!-- Crawl signals -->
+    <meta name="robots" content="{{ page.robots }}">
+
+    <!-- Socials -->
+    <meta property="og:title" content="{{ page.title }}">
+    <meta property="og:description" content="{{ page.description }}">
+    <meta property="og:url" content="{{ page.url }}">
+    <meta property="og:image" content="{{ page.image }}">
+
+    <!-- Styles -->
+    <!-- App styles -->
+    {{#each app.styles}}
+    <link rel="stylesheet" href="/styles/{{ this }}.css">
+    {{/each}}
+    <!-- Page styles -->
+    {{#each page.styles}}
+    <link rel="stylesheet" href="/styles/{{ this }}.css">
+    {{/each}}
+
+    <!-- Scripts -->
+    <!-- App scripts -->
+    {{#each app.scripts}}
+    <script src="/scripts/{{ id }}.js"></script>
+    {{/each}}
+    <!-- Page scripts -->
+    {{#each page.scripts}}
+    <script src="/scripts/{{ id }}.js"></script>
+    {{/each}}
+</head>
+<body>
+    {{#if error }}
+    <div id="error" class="danger card container dismissable">
+        <header>
+            <p><b>Error</b>: {{ error }}</p>
+        </header>
+    </div>
+    {{/if}}
+    {{#if success }}
+    <div id="notification" class="info card">
+        <p><b>Success</b>: {{ success }}</p>
+    </div>
+    {{/if}}
+    {{{ body }}}
+</body>
+</html>

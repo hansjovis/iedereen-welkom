@@ -1,58 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auth - Login</title>
-    <!-- Styles -->
-    <link rel="stylesheet" href="/styles/reset.css">
-    <link rel="stylesheet" href="/styles/layout.css">
-    <link rel="stylesheet" href="/styles/common.css">
-    <link rel="stylesheet" href="/styles/card.css">
-    <link rel="stylesheet" href="/styles/sizing.css">
-    <link rel="stylesheet" href="/styles/dismissable.css">
-    <link rel="stylesheet" href="/styles/nav.css">
-    <link rel="stylesheet" href="/styles/form.css">
-    <!-- Scripts -->
-    <script src="/scripts/dismissable.js"></script>
-</head>
-<body class="center-content">
-    {{#if error }}
-    <div id="error" class="danger card container dismissable">
-        <header>
-            <p><b>Error</b>: {{ error }}</p>
-        </header>
-    </div>
-    {{/if}}
-    {{#if success }}
-    <div id="notification" class="info card">
-        <p><b>Success</b>: {{ success }}</p>
-    </div>
-    {{/if}}
-    <form class="card container" {{#if activeCredentials}} method="POST" {{/if}}>
-        <header>
-            <img src="/icons/login.svg" class="icon" alt=""/>
-            <h1>Log in</h1>
-        </header>
-        <div class="card-body">
-            <div class="input-row">
-                <label for="emailAddress">Email address</label>
-                <input type="email" name="emailAddress" id="emailAddress" value="{{emailAddress}}">
-            </div>
-            {{#each activeCredentials}}
-            <div class="input-row">
-                <label for="{{this.id}}">{{this.label}}</label>
-                <p>{{this.description}}</p>
-                <input type="{{this.type}}" {{#if this.pattern}}pattern="{{this.pattern}}"{{/if}} name="{{this.id}}" id="{{this.id}}" value="{{this.value}}">
-            </div>
-            {{/each}}
+<form class="card container" {{#if activeCredentials}} method="POST" {{/if}}>
+    <header>
+        <img src="/icons/login.svg" class="icon" alt=""/>
+        <h1>Log in</h1>
+    </header>
+    <div class="card-body">
+        <div class="input-row">
+            <label for="emailAddress">Email address</label>
+            <input type="email" name="emailAddress" id="emailAddress" value="{{emailAddress}}" required>
         </div>
-        <footer>
-            <button type="submit">
-                <img src="/icons/login.svg" class="icon" alt=""/>
-                Log in
-            </button>
-        </footer>
-    </form>
-</body>
-</html>
+        {{#each activeCredentials}}
+        {{> (concat "login/" this) }}
+        {{/each}}
+    </div>
+    <footer>
+        <button type="submit">
+            <img src="/icons/login.svg" class="icon" alt=""/>
+            Log in
+        </button>
+    </footer>
+</form>

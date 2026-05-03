@@ -1,0 +1,10 @@
+<div class="input-row">
+    <label for="totp">2FA (using an authentication app)</label>
+    <p>
+        Scan the QR code below with your authentication app of choice, or add the following secret manually
+    </p>
+    <input type="text" name="totp" id="totp" readonly="" style="color: black;" value="{{ totp.secret }}"/>
+    <figure style="margin-inline: auto;">
+        <img src="{{ totp.QRCode }}" alt="2FA app QR code." style="max-width: 512px;">
+    </figure>
+</div>

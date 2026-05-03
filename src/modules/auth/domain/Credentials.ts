@@ -1,11 +1,3 @@
-export type InputConfiguration = {
-    id: string,
-    label: string,
-    description: string,
-    type: "text",
-    pattern?: string,
-}
-
 /**
  * Configuration for credentials used in authentication.
  * 
@@ -20,8 +12,6 @@ export interface CredentialsConfiguration {
      * @returns A promise indicating whether the given credentials are valid.
      */
     check(credentials: UnsafeCredentials): Promise<boolean>;
-
-    inputConfiguration(): InputConfiguration;
 }
 
 /**

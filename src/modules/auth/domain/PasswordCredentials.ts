@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 
-import { UnsafeCredentials, CredentialsConfiguration, InputConfiguration } from "./Credentials.js";
+import { UnsafeCredentials, CredentialsConfiguration } from "./Credentials.js";
 
 export class UnsafePassword extends Error {}
 
@@ -29,14 +29,5 @@ export class PasswordConfiguration implements CredentialsConfiguration {
 
     async check(password: Password): Promise<boolean> {
         return bcrypt.compareSync(password.value, this.hashedPassword);
-    }
-
-    inputConfiguration(): InputConfiguration {
-        return {
-            id: this.forType,
-            label: "Password",
-            description: "Your password.",
-            type: "text",
-        };
     }
 }

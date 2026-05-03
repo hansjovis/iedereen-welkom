@@ -3,11 +3,12 @@ import { Response as ExpressResponse } from "express";
 
 import { HTTPStatus } from "../../common/HTTPStatus.js";
 import { NotFound } from "../../exceptions/index.js";
+import { Page, PageMeta } from "../../PageMeta.js";
 
 import { UserService, EmailAddress, User } from "../user/index.js";
 import { EmailService } from "../email/email.service.js";
 
-import { UnsafeCredentials, CredentialTypeMap, LoginCodeConfiguration, InputConfiguration } from "./domain/index.js";
+import { UnsafeCredentials, CredentialTypeMap, LoginCodeConfiguration } from "./domain/index.js";
 import { LoginCodeMail } from "./emails/login-code.email.js";
 
 type LoginRequestBody = {
@@ -17,7 +18,12 @@ type LoginRequestBody = {
 
 type LoginCapabilitiesResponse = {
     emailAddress?: string,
-    activeCredentials?: InputConfiguration[],
+    activeCredentials?: string[],
+};
+
+const page: Page = {
+    title: "Login",
+    description: "Please login here!",
 }
 
 @Controller("/auth/login")
@@ -54,6 +60,7 @@ export class LoginController {
 
     @Get("/")
     @Render("login")
+    @PageMeta(page)
     async loginCapabilities(
         @Query("emailAddress") emailAddress?: string,
     ): Promise<LoginCapabilitiesResponse> {
@@ -79,7 +86,7 @@ export class LoginController {
     async sendLoginCode(
         user: User,
     ): Promise<void> {
-        const loginCodeConfig = user.auth.get("login-code") as LoginCodeConfiguration;
+        const loginCodeConfig = user.auth.get("login_code") as LoginCodeConfiguration;
         if (loginCodeConfig === undefined) {
             return;
         }

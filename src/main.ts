@@ -4,20 +4,39 @@ import { loadEnvFile } from "node:process";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { NestFactory } from "@nestjs/core";
 
-import { static as expressStatic } from "express";
+import { static as expressStatic, NextFunction, Request, Response } from "express";
 import session from "express-session";
 import flash from "connect-flash";
+import hbs from "hbs";
 
 import { AppModule } from "./modules/app.module.js";
 import { HTTPExceptionHandler } from "./handleError.js";
+
+function setupViewEngine(app: NestExpressApplication) {
+    app.setBaseViewsDir(join("views"));
+    app.setViewEngine("hbs");
+
+    function concatHelper(...strings: string[]) {
+        // Strip off the last argument, since it is a context object.
+        return strings.slice(0, -1).join("");
+    }
+
+    hbs.registerHelper("concat", concatHelper);
+    hbs.registerPartials("views/partials");
+
+    app.set("view options", { 
+        layout: "/layouts/main",
+    });
+}
 
 async function bootstrap() {
     loadEnvFile();
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-    app.setBaseViewsDir(join("views"));
     app.use(expressStatic("public"));
-    app.setViewEngine("hbs");
+
+    setupViewEngine(app);
+
     app.use(session({
         secret: process.env.SESSION_SECRET,
         resave: false,
@@ -26,6 +45,24 @@ async function bootstrap() {
     app.use(flash());
     app.use((req, res, next) => {
         res.locals.error = req.flash("error");
+        next();
+    });
+    app.use((_: Request, res: Response, next: NextFunction) => {
+        res.locals.app = {
+            name: "Auth",
+            styles: [
+                "reset",
+                "main",
+                "common",
+                "card",
+                "form",
+                "dismissable",
+                "layout",
+            ],
+            scripts: [
+                { id: "dismissable" }
+            ]
+        }
         next();
     });
     app.useGlobalFilters(

@@ -1,4 +1,4 @@
-import { CredentialsConfiguration, InputConfiguration, UnsafeCredentials } from "./Credentials.js";
+import { CredentialsConfiguration, UnsafeCredentials } from "./Credentials.js";
 import { LoginCodeConfiguration } from "./LoginCodeCredentials.js";
 
 export class Authentication {
@@ -11,7 +11,7 @@ export class Authentication {
     static create(): Authentication {
         // Always add login code authentication, even if no other methods are configured.
         return new Authentication(
-            new Map().set("login-code", LoginCodeConfiguration.create())
+            new Map().set("login_code", LoginCodeConfiguration.create())
         );
     }
 
@@ -31,8 +31,8 @@ export class Authentication {
         return this.configMap.get(type);
     }
 
-    get registered(): InputConfiguration[] {
-        return [...this.configMap.values()].map(it => it.inputConfiguration());
+    get registered(): string[] {
+        return [...this.configMap.values()].map(it => it.forType);
     }
 
     async check(...credentials: UnsafeCredentials[]): Promise<boolean> {

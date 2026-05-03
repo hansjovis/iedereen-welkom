@@ -14,11 +14,11 @@ export * from "./Secret.js";
 export const CredentialTypeMap = {
     "password": Password,
     "totp": TOTPCode,
-    "login-code": LoginCode,
+    "login_code": LoginCode,
 }
 
 export const CredentialConfigurationTypeMap = {
     "password": PasswordConfiguration,
     "totp": TOTPConfiguration,
-    "login-code": LoginCodeConfiguration,
+    "login_code": LoginCodeConfiguration,
 }
