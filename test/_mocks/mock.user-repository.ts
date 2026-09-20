@@ -1,6 +1,6 @@
 import type { UserRepository } from "../../dist/modules/user/repositories/user.repository.js";
 import { User, EmailAddress } from "../../dist/modules/user/domain/index.js";
-import { UUID } from "../../dist/modules/user/domain/UUID.js";
+import { UserID } from "../../dist/modules/user/domain/index.js";
 
 export class MockUserRepository implements UserRepository {
     private readonly users: Map<string, User> = new Map();
@@ -16,7 +16,7 @@ export class MockUserRepository implements UserRepository {
         return [...this.users.values()].find(user => user.email.equals(email));
     }
 
-    retrieveById(id: UUID): User | undefined {
+    retrieveById(id: UserID): User | undefined {
         return this.users.get(id.toString());
     }
 

@@ -1,16 +1,16 @@
 import { Authentication } from "../../../modules/auth/index.js";
 
 import { EmailAddress } from "./EmailAddress.js";
-import { UUID } from "./UUID.js";
+import { UserID } from "./UserID.js";
 
 export type UserProps = {
-    id: UUID,
+    id: UserID,
     userName: string,
     email: EmailAddress,
 }
 
 export class User {
-    readonly id: UUID;
+    readonly id: UserID;
     readonly userName: string;
     readonly email: EmailAddress;
 
@@ -24,7 +24,7 @@ export class User {
     }
 
     static create(email: EmailAddress, userName: string): User {
-        const id = UUID.create();
+        const id = UserID.create();
         return new User({ id, userName, email });
     }
 }

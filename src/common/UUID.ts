@@ -1,7 +1,8 @@
-import { Equatable } from "../../../common/Equatable.js";
-import { InvalidValue } from "../../../exceptions/index.js";
+import { InvalidValue } from "../exceptions/index.js";
 
-export class UUID implements Equatable<UUID> {
+import { Equatable } from "./Equatable.js";
+
+export abstract class UUID implements Equatable<UUID> {
     private static regex = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/gm;
 
     public readonly value: string;
@@ -10,10 +11,6 @@ export class UUID implements Equatable<UUID> {
             throw new InvalidValue(`"${value}" is an invalid UUID.`);
         } 
         this.value = value;
-    }
-
-    static create(): UUID {
-        return new UUID(crypto.randomUUID());
     }
 
     toString(): string {

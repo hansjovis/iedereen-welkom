@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { User, EmailAddress } from "../domain/index.js";
-import { UUID } from "../domain/index.js";
+import { UserID } from "../domain/index.js";
 import { UserRepository } from "./user.repository.js";
 
 @Injectable()
@@ -26,7 +26,7 @@ export class InMemoryUserRepository implements UserRepository {
             .find(user => user.email.equals(email));
     }
 
-    retrieveById(id: UUID): User | undefined {
+    retrieveById(id: UserID): User | undefined {
         return this.users.get(id.toString());
     }
 

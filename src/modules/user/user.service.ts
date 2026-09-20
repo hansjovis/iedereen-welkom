@@ -4,7 +4,7 @@ import { Inject, Injectable, Logger, LoggerService } from "@nestjs/common";
 import { NotFound, Unauthorized } from "../../exceptions/index.js";
 import { UnsafeCredentials, CredentialsConfiguration } from "../auth/index.js";
 // Local dependencies
-import { User, EmailAddress, UUID } from "./domain/index.js";
+import { User, EmailAddress, UserID } from "./domain/index.js";
 import { UserRepository } from "./repositories/user.repository.js";
 
 @Injectable()
@@ -23,7 +23,7 @@ export class UserService {
         return user;
     }
 
-    activate(userID: UUID, credentials: CredentialsConfiguration[]): User {
+    activate(userID: UserID, credentials: CredentialsConfiguration[]): User {
         const user = this.userRepository.retrieveById(userID);
         if (user === undefined) {
             throw new NotFound(`User with id ${userID} could not be found.`);
@@ -63,7 +63,7 @@ export class UserService {
         }
 
         const user = this.userRepository.retrieveById(
-            new UUID(uuidString)
+            new UserID(uuidString)
         );
         
         if (user === undefined) {
