@@ -66,6 +66,8 @@ export class ConfigureController {
 
         this.userRepository.save(user);
 
+        this.logger.log(`Configured authentication for user ${user.email} (${user.auth.registered}).`);
+
         response.redirect(HTTPStatus.SeeOther.code, `/users/${encodeURIComponent(user.userName)}`);
     }
 }

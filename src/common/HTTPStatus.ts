@@ -7,12 +7,21 @@ export class InvalidHTTPStatus extends Error {
 export class HTTPStatus {
     static readonly Success = new HTTPStatus(200, "Success");
     static readonly Created = new HTTPStatus(201, "Created");
-
+    static readonly SeeOther = new HTTPStatus(303, "See Other");
+    static readonly BadRequest = new HTTPStatus(400, "Bad Request");
     static readonly Unauthorized = new HTTPStatus(403, "Unauthorized");
     static readonly NotFound = new HTTPStatus(404, "Not Found");
-    static readonly BadRequest = new HTTPStatus(400, "Bad Request");
-    static readonly SeeOther = new HTTPStatus(303, "See Other");
     static readonly InternalServerError = new HTTPStatus(500, "Internal Server Error");
+
+    static readonly map: Record<number, HTTPStatus> = {
+        200: HTTPStatus.Success,
+        201: HTTPStatus.Created,
+        303: HTTPStatus.SeeOther,
+        400: HTTPStatus.BadRequest,
+        403: HTTPStatus.Unauthorized,
+        404: HTTPStatus.NotFound,
+        500: HTTPStatus.InternalServerError,
+    }
 
     constructor(
         public readonly code: number, 
@@ -24,15 +33,10 @@ export class HTTPStatus {
     }
 
     static byCode(code: number): HTTPStatus {
-        switch (code) {
-            case 200: return HTTPStatus.Success;
-            case 201: return HTTPStatus.Created;
-            case 303: return HTTPStatus.SeeOther;
-            case 400: return HTTPStatus.BadRequest;
-            case 403: return HTTPStatus.Unauthorized;
-            case 404: return HTTPStatus.NotFound;
-            default: return HTTPStatus.InternalServerError;
+        if (code in this.map) {
+            return this.map[code];
         }
+        return HTTPStatus.Unauthorized;
     }
 
     equals(other: HTTPStatus): boolean {
@@ -44,5 +48,9 @@ export class HTTPStatus {
             code: this.code,
             message: this.message,
         };
+    }
+
+    toString() {
+        return `${this.code} (${this.message})`;
     }
 }

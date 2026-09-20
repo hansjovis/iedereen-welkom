@@ -12,7 +12,7 @@ export class HTTPExceptionHandler implements ExceptionFilter {
         const request: Request = host.switchToHttp().getRequest();
         const response: Response = host.switchToHttp().getResponse();
 
-        this.logger.error(exception.toString());
+        this.logger.error(`${exception.status}; ${exception}`);
 
         let redirectTo = request.path;
         if (exception.status.equals(HTTPStatus.Unauthorized)) {
