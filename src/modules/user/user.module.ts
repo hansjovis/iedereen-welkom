@@ -5,6 +5,8 @@ import { UserController } from "./user.controller.js";
 import { UserRepository } from "./repositories/user.repository.js";
 import { User } from "./domain/User.js";
 import { EmailAddress } from "./domain/EmailAddress.js";
+import { EmailModule } from "../email/email.module.js";
+import { NoopEmailService } from "../email/noop.email-service.js";
 
 @Module({
     controllers: [
@@ -16,6 +18,13 @@ import { EmailAddress } from "./domain/EmailAddress.js";
             provide: "UserRepository",
             useClass: InMemoryUserRepository,
         },
+        {
+            provide: "EmailService",
+            useClass: NoopEmailService,
+        },
+    ],
+    imports: [
+        EmailModule,
     ],
     exports: [
         UserService,

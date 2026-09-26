@@ -1,25 +1,37 @@
+/* eslint-disable max-statements */
 import { Controller, Body, Post, Session, Get, Query, Inject, Res, Render } from "@nestjs/common";
 import { Response as ExpressResponse } from "express";
 
 import { HTTPStatus } from "../../common/HTTPStatus.js";
-import { NotFound } from "../../exceptions/index.js";
+import { NotFound, BadRequest } from "../../exceptions/index.js";
 import { Page, PageMeta } from "../../PageMeta.js";
 
-import { UserService, EmailAddress, User } from "../user/index.js";
-import { EmailService } from "../email/email.service.js";
+import { UserService, EmailAddress } from "../user/index.js";
+import { AppRepository, App, AppID } from "../apps/index.js";
 
-import { UnsafeCredentials, CredentialTypeMap, LoginCodeConfiguration } from "./domain/index.js";
-import { LoginCodeMail } from "./emails/login-code.email.js";
-
-type LoginRequestBody = {
-    emailAddress: string,
-    [credentialType: string]: string,
-}
+import { AuthenticationCodeService } from "./authentication-code.service.js";
+import { parseEnteredCredentials } from "./domain/index.js";
 
 type LoginCapabilitiesResponse = {
-    emailAddress?: string,
-    activeCredentials?: string[],
+    client?: unknown,
+    email_address?: string,
+    active_credentials?: string[],
 };
+
+type LoginQueryParams = {
+    email_address?: string,
+    response_type?: string,
+    client_id?: string,
+    redirect_uri?: string,
+    scope?: string,
+    state?: string,
+}
+
+type LoginRequestBody = LoginQueryParams & {
+    password?: string,
+    totp?: string,
+    login_code?: string,
+}
 
 const page: Page = {
     title: "Login",
@@ -30,7 +42,8 @@ const page: Page = {
 export class LoginController {
     constructor(
         private readonly userService: UserService,
-        @Inject("EmailService") private readonly emailService: EmailService,
+        private readonly authenticationCodeService: AuthenticationCodeService,
+        @Inject("AppRepository") private readonly apps: AppRepository,
     ) {}
 
     @Post("/")
@@ -39,59 +52,100 @@ export class LoginController {
         @Body() loginDetails: LoginRequestBody,
         @Session() session: Record<string, unknown>
     ) {
-        const email = new EmailAddress(loginDetails.emailAddress);
-
-        const credentials: UnsafeCredentials[] = [];
-        for(const [type, value] of Object.entries(loginDetails)) {
-            if (type === "emailAddress") continue;
-            credentials.push(new CredentialTypeMap[type](value));
-        }
+        const email = new EmailAddress(loginDetails.email_address);
+        const credentials = parseEnteredCredentials(loginDetails);
 
         const user = await this.userService.login(email, credentials);
+
+        // User has successfuly logged in from this point onwards.
         session.userID = user.id.toString();
 
         if (user.auth.registered.length === 1) {
             // User has less than two factors active, force them to add more login factors.
-            response.redirect(HTTPStatus.SeeOther.code, "/auth/configure");
+            session.redirectUri = this.createRedirectUri(loginDetails);
+            response.redirect(HTTPStatus.SeeOther.code, `/auth/configure`);
             return;
         }
-        response.redirect(HTTPStatus.SeeOther.code, `/users/${encodeURIComponent(user.userName)}`);
+
+        const authenticationCode = this.authenticationCodeService.create(user.id);
+        const redirectUri = new URL(loginDetails.redirect_uri);
+        const params = new URLSearchParams({ code: authenticationCode.toJSON() });
+
+        response.redirect(HTTPStatus.SeeOther.code, `${redirectUri}?${params}`);
+    }
+
+    private createRedirectUri(loginDetails: LoginQueryParams) {
+        const { email_address, client_id, response_type, redirect_uri, scope, state } = loginDetails;
+        const params = new URLSearchParams({ email_address, client_id, response_type, redirect_uri, scope, state });
+        const redirectUri = `/auth/login?${params}`;
+        return redirectUri;
     }
 
     @Get("/")
     @Render("login")
     @PageMeta(page)
     async loginCapabilities(
-        @Query("emailAddress") emailAddress?: string,
+        @Res() response: ExpressResponse,
+        @Query() query: LoginQueryParams,
+        @Session() session: Record<string, unknown>,
     ): Promise<LoginCapabilitiesResponse> {
-        if (emailAddress === undefined) {
-            return {};
-        }
-        const email = new EmailAddress(emailAddress);
-        const user = await this.userService.retrieveByEmail(email);
+        this.validateLoginQuery(query);
 
-        if (user === undefined) {
-            throw new NotFound(`User with email address ${email} could not be found.`);
-        }
+        let user = await this.userService.retrieveUserFromSession(session);
 
-        await this.sendLoginCode(user);
+        const app = this.retrieveApp(
+            new AppID(query.client_id),
+            new URL(query.redirect_uri),
+        );
 
-        return {
-            emailAddress: user.email.toString(),
-            activeCredentials: user.auth.registered,
-        };
-    }
+        if (user !== undefined) {
+            // User has already logged in, redirect to client app with authorization code.
+            const authenticationCode = this.authenticationCodeService.create(user.id);
+            const redirectUri = new URL(query.redirect_uri);
+            const params = new URLSearchParams({ code: authenticationCode.toJSON() });
 
-    // @todo: rate limit sending a login code to once per 10 minutes.
-    async sendLoginCode(
-        user: User,
-    ): Promise<void> {
-        const loginCodeConfig = user.auth.get("login_code") as LoginCodeConfiguration;
-        if (loginCodeConfig === undefined) {
+            response.redirect(HTTPStatus.SeeOther.code, `${redirectUri}?${params}`);
             return;
         }
 
-        const loginCode = await loginCodeConfig.generate();
-        this.emailService.send(new LoginCodeMail(user, loginCode));
+        if (query.email_address === undefined)
+            return { client: app.toJSON() };
+
+        const email = new EmailAddress(query.email_address);
+        user = await this.userService.retrieveByEmail(email);
+
+        if (user === undefined)
+            throw new NotFound(`User with email address ${email} could not be found.`);
+
+        await this.userService.sendLoginCode(user);
+
+        return {
+            client: app.toJSON(),
+            email_address: user.email.toJSON(),
+            active_credentials: user.auth.registered,
+        };
+    }
+
+    private validateLoginQuery(query: LoginQueryParams): void {
+        if (query.client_id === undefined) 
+            throw new BadRequest("Missing client ID.");
+        if (query.response_type === undefined)
+            throw new BadRequest("Missing response type.");
+        if (query.response_type !== "code") 
+            throw new BadRequest("Only supported response type is \"code\"");
+        if (query.redirect_uri === undefined || URL.canParse(query.redirect_uri) === false)
+            throw new BadRequest("Missing or invalid redirect URI.");
+    }
+
+    private retrieveApp(appId: AppID, redirectUri: URL): App {
+        const app = this.apps.retrieveById(appId);
+
+        if (app === undefined)
+            throw new NotFound(`No client found with ID ${appId}.`);
+
+        if (app.redirectUri.toJSON() !== redirectUri.toJSON()) 
+            throw new BadRequest(`Invalid redirect URI ${redirectUri}.`);
+
+        return app;
     }
 }

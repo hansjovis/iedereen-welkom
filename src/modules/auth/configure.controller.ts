@@ -5,6 +5,7 @@ import { UserService, UserRepository } from "../user/index.js";
 import { HTTPStatus } from "../../common/index.js";
 
 import { TOTPConfiguration, PasswordConfiguration, Secret } from "./domain/index.js";
+import { Unauthorized } from "../../exceptions/Unauthorized.js";
 
 type ConfigurationRequestBody = {
     password?: string,
@@ -27,6 +28,9 @@ export class ConfigureController {
     ) {
         const user = await this.userService.retrieveUserFromSession(session);
 
+        if (user === undefined)
+            throw new Unauthorized("You are not authorized to view this page.");
+
         const totpConfig = TOTPConfiguration.generate(user.userName, "Hansjovis Auth");
 
         return {
@@ -46,8 +50,11 @@ export class ConfigureController {
     ) {
         const user = await this.userService.retrieveUserFromSession(session);
 
+        if (user === undefined)
+            throw new Unauthorized("You are not authorized to view this page.");
+
         user.auth.clear();
-        
+
         if (configurationDetails.password) {
             user.auth.configure(
                 PasswordConfiguration.create(configurationDetails.password)
@@ -66,8 +73,12 @@ export class ConfigureController {
 
         this.userRepository.save(user);
 
-        this.logger.log(`Configured authentication for user ${user.email} (${user.auth.registered}).`);
+        const redirectUri = session.redirectUri as string ?? `/users/${user.id}`;
 
-        response.redirect(HTTPStatus.SeeOther.code, `/users/${encodeURIComponent(user.userName)}`);
+        this.logger.log(
+            `Configured authentication for user ${user.email} (${user.auth.registered}). Redirecting to ${redirectUri}`
+        );
+
+        response.redirect(HTTPStatus.SeeOther.code, redirectUri);
     }
 }

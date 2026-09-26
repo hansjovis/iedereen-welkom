@@ -1,6 +1,7 @@
-import { LoginCode, LoginCodeConfiguration } from "./LoginCodeCredentials.js";
-import { Password, PasswordConfiguration } from "./PasswordCredentials.js";
-import { TOTPCode, TOTPConfiguration } from "./TOTPCredentials.js";
+import { UnsafeCredentials } from "./Credentials.js";
+import { LoginCode } from "./LoginCodeCredentials.js";
+import { Password } from "./PasswordCredentials.js";
+import { TOTPCode } from "./TOTPCredentials.js";
 
 export * from "./Authentication.js";
 export * from "./Credentials.js";
@@ -10,15 +11,30 @@ export * from "./PasswordCredentials.js";
 export * from "./TOTPCredentials.js";
 export * from "./Secret.js";
 
-// @todo: Come up with a better solution, e.g. some kind of registry?
-export const CredentialTypeMap = {
-    "password": Password,
-    "totp": TOTPCode,
-    "login_code": LoginCode,
-}
+const AvailableCredentials: string[] = [
+    "password",
+    "totp",
+    "login_code",
+];
 
-export const CredentialConfigurationTypeMap = {
-    "password": PasswordConfiguration,
-    "totp": TOTPConfiguration,
-    "login_code": LoginCodeConfiguration,
+// @todo: Come up with a better solution, e.g. some kind of registry?
+const CredentialTypeMap = {
+    password: Password,
+    totp: TOTPCode,
+    login_code: LoginCode,
+};
+
+type CredentialMap = {
+    password?: string,
+    totp?: string,
+    login_code?: string,
+};
+
+export function parseEnteredCredentials(credentialMap: CredentialMap) {
+    const credentials: UnsafeCredentials[] = [];
+    for(const [type, value] of Object.entries(credentialMap)) {
+        if (AvailableCredentials.includes(type))
+            credentials.push(new CredentialTypeMap[type](value));
+    }
+    return credentials;
 }

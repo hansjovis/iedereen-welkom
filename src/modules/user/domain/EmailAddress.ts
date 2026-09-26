@@ -23,4 +23,8 @@ export class EmailAddress implements Equatable<EmailAddress> {
     toString() {
         return this.value;
     }
+
+    toJSON(): string {
+        return this.toString();
+    }
 }

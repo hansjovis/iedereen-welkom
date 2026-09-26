@@ -1,14 +1,19 @@
-<form class="card container" {{#if activeCredentials}} method="POST" {{/if}}>
+<form class="card container" {{#if active_credentials}} method="POST" {{/if}}>
     <header>
         <img src="/icons/login.svg" class="icon" alt=""/>
-        <h1>Log in</h1>
+        <h1>Log in to {{client.name}}</h1>
     </header>
     <div class="card-body">
         <div class="input-row">
-            <label for="emailAddress">Email address</label>
-            <input type="email" name="emailAddress" id="emailAddress" value="{{emailAddress}}" required>
+            <label for="email_Address">Email address</label>
+            <input type="email" name="email_address" id="emailAddress" value="{{email_address}}" required>
         </div>
-        {{#each activeCredentials}}
+        <!-- Hidden fields -->
+        <input type="hidden" name="client_id" value="{{client.id}}">
+        <input type="hidden" name="response_type" value="{{client.response_type}}">
+        <input type="hidden" name="redirect_uri" value="{{client.redirect_uri}}">
+        <!-- /Hidden fields -->
+        {{#each active_credentials}}
         {{> (concat "login/" this) }}
         {{/each}}
     </div>

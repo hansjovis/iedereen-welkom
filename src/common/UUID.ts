@@ -17,6 +17,10 @@ export abstract class UUID implements Equatable<UUID> {
         return this.value;
     }
 
+    toJSON(): string {
+        return this.toString();
+    }
+
     equals(other: UUID): boolean {
         return this.value === other.value;
     }
