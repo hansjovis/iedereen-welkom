@@ -13,7 +13,7 @@ export class InMemoryAppRepository implements AppRepository {
         this.apps.set(app.id.toString(), app);
     }
 
-    retrieveById(id: AppID): App | undefined {
+    async retrieveById(id: AppID): Promise<App | undefined> {
         return this.apps.get(id.toString());
     }
 }

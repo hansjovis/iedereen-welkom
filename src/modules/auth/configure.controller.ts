@@ -7,12 +7,12 @@ import { HTTPStatus } from "../../common/index.js";
 import { TOTPConfiguration, PasswordConfiguration, Secret } from "./domain/index.js";
 import { Unauthorized } from "../../exceptions/Unauthorized.js";
 
-type ConfigurationRequestBody = {
+type RequestBody = {
     password?: string,
     totp?: string,
 }
 
-@Controller("/auth/configure")
+@Controller("/configure")
 export class ConfigureController {
     private readonly logger = new Logger(ConfigureController.name);
 
@@ -45,7 +45,7 @@ export class ConfigureController {
     @Post("/")
     async saveConfiguration(
         @Res() response: Response,
-        @Body() configurationDetails: ConfigurationRequestBody,
+        @Body() body: RequestBody,
         @Session() session: Record<string, unknown>,
     ) {
         const user = await this.userService.retrieveUserFromSession(session);
@@ -53,18 +53,18 @@ export class ConfigureController {
         if (user === undefined)
             throw new Unauthorized("You are not authorized to view this page.");
 
-        user.auth.clear();
+        user.authentication.clear();
 
-        if (configurationDetails.password) {
-            user.auth.configure(
-                PasswordConfiguration.create(configurationDetails.password)
+        if (body.password) {
+            user.authentication.configure(
+                PasswordConfiguration.create(body.password)
             );
         }
 
-        if (configurationDetails.totp) {
-            user.auth.configure(
+        if (body.totp) {
+            user.authentication.configure(
                 TOTPConfiguration.create({
-                    secret: new Secret(configurationDetails.totp),
+                    secret: new Secret(body.totp),
                     issuer: "Hansjovis Auth",
                     accountName: user.userName,
                 }),
@@ -73,10 +73,10 @@ export class ConfigureController {
 
         this.userRepository.save(user);
 
-        const redirectUri = session.redirectUri as string ?? `/users/${user.id}`;
+        const redirectUri: string = (session.redirect_to as string) ?? `/users/${encodeURIComponent(user.userName)}`;
 
         this.logger.log(
-            `Configured authentication for user ${user.email} (${user.auth.registered}). Redirecting to ${redirectUri}`
+            `Configured authentication for user ${user.email} (${user.authentication.registered}). Redirecting to ${redirectUri}`
         );
 
         response.redirect(HTTPStatus.SeeOther.code, redirectUri);

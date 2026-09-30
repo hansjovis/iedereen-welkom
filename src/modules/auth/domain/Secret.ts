@@ -31,6 +31,10 @@ export class Secret {
         return new Secret(toBase32(randomBytes));
     }
 
+    equals(other: Secret): boolean {
+        return this.value === other.value;
+    }
+
     toString(): string {
         return this.value;
     }

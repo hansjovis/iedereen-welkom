@@ -31,8 +31,8 @@ export class UserService {
         if (user === undefined) {
             throw new NotFound(`User with id ${userID} could not be found.`);
         }
-        user.auth.clear();
-        credentials.forEach(it => user.auth.configure(it));
+        user.authentication.clear();
+        credentials.forEach(it => user.authentication.configure(it));
         this.logger.log(`Activated user with id ${userID}.`);
         return user;
     }
@@ -43,7 +43,7 @@ export class UserService {
             this.logger.log(`User with email ${email} failed to log in (user not found).`);
             throw new NotFound(`User with email address ${email} could not be found.`);
         }
-        if(await user.auth.check(...credentials) === false ) {
+        if(await user.authentication.check(...credentials) === false ) {
             this.logger.log(`User with email ${email} failed to log in.`);
             throw new Unauthorized("Invalid credentials");
         };
@@ -52,7 +52,7 @@ export class UserService {
     }
 
     async sendLoginCode(user: User) {
-        const loginCodeConfig = user.auth.get("login_code") as LoginCodeConfiguration;
+        const loginCodeConfig = user.authentication.get("login_code") as LoginCodeConfiguration;
         if (loginCodeConfig === undefined) return;
         const loginCode = await loginCodeConfig.generate();
         this.emailService.send(new LoginCodeMail(user, loginCode));
@@ -72,10 +72,6 @@ export class UserService {
             return undefined;
         }
 
-        const user = this.userRepository.retrieveById(
-            new UserID(uuidString)
-        );
-
-        return user;
+        return this.userRepository.retrieveById(new UserID(uuidString));
     }
 }

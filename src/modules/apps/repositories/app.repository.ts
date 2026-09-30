@@ -3,5 +3,5 @@ import { AppID } from "../domain/AppID.js";
 
 export interface AppRepository {
     create(app: App): void;
-    retrieveById(id: AppID): App | undefined;
+    retrieveById(id: AppID): Promise<App | undefined>;
 }

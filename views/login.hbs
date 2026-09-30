@@ -8,11 +8,6 @@
             <label for="email_Address">Email address</label>
             <input type="email" name="email_address" id="emailAddress" value="{{email_address}}" required>
         </div>
-        <!-- Hidden fields -->
-        <input type="hidden" name="client_id" value="{{client.id}}">
-        <input type="hidden" name="response_type" value="{{client.response_type}}">
-        <input type="hidden" name="redirect_uri" value="{{client.redirect_uri}}">
-        <!-- /Hidden fields -->
         {{#each active_credentials}}
         {{> (concat "login/" this) }}
         {{/each}}
