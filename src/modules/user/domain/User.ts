@@ -32,12 +32,16 @@ export class User {
         return new User({ id, userName, email });
     }
 
+    setPermissions(appId: AppID, permissions: PermissionSet) {
+        this.permissions.set(appId.value, permissions);
+    }
+
     permissionsFor(appId: AppID): PermissionSet | undefined {
         return this.permissions.get(appId.value);
     }
 
-    hasPermissionsSetFor(appId: AppID, authorizations: PermissionSet): boolean {
-        return this.permissionsFor(appId)?.isSupersetOf(authorizations);
+    hasPermissionsSetFor(appId: AppID, permissions: PermissionSet): boolean {
+        return this.permissionsFor(appId)?.isSupersetOf(permissions);
     }
 
     toJSON() {

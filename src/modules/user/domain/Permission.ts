@@ -1,10 +1,7 @@
 import { Claim, Scope } from "../../scopes/index.js";
-import { AppID } from "../../apps/index.js";
-import { UserID } from "./UserID.js";
 
 export class PermissionSet implements ReadonlySetLike<Permission> {
     constructor(
-        readonly appId: AppID,
         readonly permissions: Set<Permission>,
     ) {}
 
@@ -12,10 +9,10 @@ export class PermissionSet implements ReadonlySetLike<Permission> {
         return this.permissions.size;
     }
 
-    static fromScopes(appId: AppID, userId: UserID, scopes: Scope[]): PermissionSet {
+    static fromScopes(scopes: Scope[]): PermissionSet {
         const claims = scopes.flatMap(scope => scope.claims);
-        const permissions = claims.map(claim => new Permission(appId, userId, claim));
-        return new PermissionSet(appId, new Set(permissions));
+        const permissions = claims.map(claim => new Permission(claim));
+        return new PermissionSet(new Set(permissions));
     }
 
     keys(): Iterator<Permission> {
@@ -32,14 +29,16 @@ export class PermissionSet implements ReadonlySetLike<Permission> {
 
     union(other: PermissionSet): PermissionSet {
         const union = this.permissions.union(other);
-        return new PermissionSet(this.appId, union);
+        return new PermissionSet(union);
     }
 
     toString(): string {
-        return this.permissions.values()
-            .map(permission => permission.claim)
-            .toArray()
-            .join(", ");
+        return `{${
+            this.permissions.values()
+                .map(val => val.toString())
+                .toArray()
+                .join(", ")
+        }}`;
     }
 }
 
@@ -48,21 +47,26 @@ export enum PermissionStatus {
     Disallowed = "Disallowed",
 }
 
+export function toPermissionStatus(status: string): PermissionStatus {
+    if (status === PermissionStatus.Allowed) {
+        return PermissionStatus.Allowed;
+    } else if (status === PermissionStatus.Disallowed) {
+        return PermissionStatus.Disallowed;
+    }
+    throw new Error(`${status} is not a valid permission status. Should be one of "Allowed" or "Disallowed".`);
+}
+
 export class Permission {
     constructor(
-        readonly appId: AppID,
-        readonly userId: UserID,
         readonly claim: Claim,
         readonly status?: PermissionStatus,
     ) {}
 
-    isForApp(appId: AppID): boolean {
-        return this.appId.equals(appId);
+    equals(other: Permission): boolean {
+        return this.claim.equals(other.claim);
     }
 
-    equals(other: Permission): boolean {
-        return this.appId.equals(other.appId) 
-            && this.userId.equals(other.userId) 
-            && this.claim.equals(other.claim);
+    toString(): string {
+        return `(${this.claim} = ${this.status})`;
     }
 }

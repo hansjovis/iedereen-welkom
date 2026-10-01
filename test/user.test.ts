@@ -11,6 +11,7 @@ import { Unauthorized } from "../dist/exceptions/Unauthorized.js"
 
 // Test utils
 import { MockUserRepository } from "./_mocks/mock.user-repository.ts"
+import { MockEmailService } from "./_mocks/mock.email-service.ts";
 
 describe("A user", () => {
     let userService: UserService;
@@ -19,7 +20,8 @@ describe("A user", () => {
     before(() => {
         userRepository = new MockUserRepository();
         userService = new UserService(
-            userRepository
+            userRepository,
+            new MockEmailService(),
         );
     });
 
@@ -46,8 +48,8 @@ describe("A user", () => {
 
         userService.activate(user.id, [PasswordConfiguration.create("some-password")]);
         // One registered authentication methods: password.
-        expect(user.auth.registered).toHaveLength(1);
-        expect(user.auth.registered[0]).toEqual("password");
+        expect(user.authentication.registered).toHaveLength(1);
+        expect(user.authentication.registered[0]).toEqual("password");
     });
 
     it("cannot activate their account when the user cannot be found", () => {

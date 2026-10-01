@@ -13,6 +13,7 @@ import hbs from "hbs";
 import { AppModule } from "./modules/app.module.js";
 import { HTTPExceptionHandler } from "./handleError.js";
 import { BadRequest } from "./exceptions/BadRequest.js";
+import { ConsolidateObjectPipe } from "./common/consolidate-query.pipe.js";
 
 function setupViewEngine(app: NestExpressApplication) {
     app.setBaseViewsDir(join("views"));
@@ -39,6 +40,7 @@ async function bootstrap() {
 
     setupViewEngine(app);
 
+    app.useGlobalPipes(new ConsolidateObjectPipe());
     app.useGlobalPipes(new ValidationPipe({ 
         transform: true,
         exceptionFactory(errors) {

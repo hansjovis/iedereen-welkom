@@ -19,6 +19,6 @@ export class Claim {
     }
 
     toString(): string {
-        return this.name;
+        return this.id;
     }
 }

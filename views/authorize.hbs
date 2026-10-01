@@ -15,8 +15,9 @@
             Note that you can always revoke, or permit, access again via your <a href="/users/{{user.userName}}">user page</a>.
         </p>
     </section>
-    <input type="hidden" name="client_id", value="{{app.id}}">
-    {{#each authorizations}}
+    <input type="hidden" name="client_id" value="{{client.id}}">
+    <input type="hidden" name="redirect_uri" value="{{redirect_uri}}">
+    {{#each permissions}}
     <fieldset>
         <legend>{{claim.name}}</legend>
         <div class="toggle-radio" data-color="green">

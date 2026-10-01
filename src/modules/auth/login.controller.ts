@@ -32,10 +32,11 @@ export class LoginController {
         private readonly userService: UserService,
     ) {}
 
+    // eslint-disable-next-line max-params
     @Post("/")
     async login(
         @Res() response: ExpressResponse,
-        @Query() query: LoginQueryParams, 
+        @Query() query: LoginQueryParams,
         @Body() body: LoginRequestBody,
         @Session() session: Record<string, unknown>
     ) {
