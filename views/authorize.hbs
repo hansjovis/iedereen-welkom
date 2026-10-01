@@ -1,0 +1,33 @@
+<form class="card container" method="post">
+    <header>
+        <h1>Authorize {{client.name}}</h1>
+    </header>
+    <section class="card-body">
+        <p>
+            <b>{{client.name}}</b> wants to have access to some of your information.
+            You can find a list below.
+        </p>
+        <p>
+            Please select for each piece of information whether you want <b>{{client.name}}</b>
+            to have access to it.
+        </p>
+        <p>
+            Note that you can always revoke, or permit, access again via your <a href="/users/{{user.userName}}">user page</a>.
+        </p>
+    </section>
+    <input type="hidden" name="client_id", value="{{app.id}}">
+    {{#each authorizations}}
+    <fieldset>
+        <legend>{{claim.name}}</legend>
+        <div class="toggle-radio" data-color="green">
+            <input type="radio" name="permissions.{{claim.id}}" id="permissions.{{claim.id}}.allow" value="Allowed">
+            <label for="permissions.{{claim.id}}.allow">Allow</label>
+            <input type="radio" name="permissions.{{claim.id}}" id="permissions.{{claim.id}}.disallow" value="Disallowed">
+            <label for="permissions.{{claim.id}}.disallow">Do not allow</label>
+        </div>
+    </fieldset>
+    {{/each}}
+    <footer>
+        <button type="submit">Save permissions</button>
+    </footer>
+</form>

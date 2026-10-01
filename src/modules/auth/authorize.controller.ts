@@ -1,24 +1,39 @@
-/* eslint-disable max-statements */
 import { Controller, Get, Inject, Logger, Query, Res, Session } from "@nestjs/common";
+import { IsIn, IsOptional, IsString, IsUrl, IsUUID } from "class-validator";
 import { Response } from "express";
 
 import { Unauthorized } from "../../exceptions/index.js";
 import { Page } from "../../PageMeta.js";
-import { union } from "../../common/set.js";
 
 import { UserService } from "../user/index.js";
-import { Authorization } from "../user/domain/Authorization.js";
+import { PermissionSet } from "../user/domain/Permission.js";
 import { AppID, AppRepository } from "../apps/index.js";
 import { ScopeRepository } from "../scopes/index.js";
 
 import { AuthenticationCodeService } from "./authentication-code.service.js";
 
-type QueryParams = {
-    response_type: string,
-    client_id: string,
-    redirect_uri: string,
-    scope: string,
-    state: string,
+class QueryParams {
+    @IsIn(["code"])
+    response_type: string;
+    @IsUUID()
+    client_id: string;
+    @IsUrl({ require_tld: false })
+    redirect_uri: string;
+    @IsString()
+    scope: string;
+    @IsOptional()
+    @IsString()
+    state?: string;
+
+    toJSON() {
+        return {
+            response_type: this.response_type,
+            client_id: this.client_id,
+            redirect_uri: this.redirect_uri,
+            scope: this.scope,
+            state: this.state,
+        }
+    }
 }
 
 const page: Page = {
@@ -51,33 +66,25 @@ export class AuthorizeController {
 
         if (user === undefined) {
             // User hasn't logged in. Redirect to login page.
-            session.redirect_to = `authorize?${new URLSearchParams(query)}`;
+            session.redirect_to = `authorize?${new URLSearchParams(query.toJSON())}`;
             return response.redirect("login");
         }
 
         const scopes = await this.scopes.retrieveByIds(query.scope.split(" "));
-        const authorizations = scopes.flatMap(scope => scope.claims)
-            .map(claim => new Authorization(app.id, user.id, claim));
+        const permissions = PermissionSet.fromScopes(app.id, user.id, scopes);
 
-        this.logger.log(
-            `Checking if user ${user.userName} has set permissions for ${app.name} to access claims [${authorizations.map(it => it.claim.name).join(", ")}].`
-        );
-
-        if (user.hasAuthorizationsSetFor(app.id, authorizations)) {
+        if (user.hasPermissionsSetFor(app.id, permissions)) {
             // User has already authorized the app to access the given claims, so we can redirect back to the client.
             const authorizationCode = this.authenticationCodeService.createFor(user.id);
             return response.redirect(`${query.redirect_uri}?code=${authorizationCode.secret}`);
         }
 
         // Show the authorization page to ask for permissions.
-        const renderParams = {
+        response.render("authorize", {
             page,
             client: app.toJSON(),
-            authorizations: union(
-                user.authorizationsSetFor(app.id),
-                authorizations,
-            )
-        }
-        response.render("authorize", renderParams)
+            user: user.toJSON(),
+            authorizations: (user.permissionsFor(app.id) ?? new Set()).union(permissions)
+        })
     }
 }

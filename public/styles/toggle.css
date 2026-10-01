@@ -1,0 +1,37 @@
+.toggle-radio {
+	display: flex;
+	border: 1px solid;
+	border-radius: 0.25rem;
+	width: fit-content;
+}
+
+.toggle-radio > input {
+	/* Visually hidden */
+	position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+.toggle-radio > label {
+	padding: 0.25rem 0.5rem;
+	margin: 0;
+}
+
+.toggle-radio:focus-within {
+	outline: blue 2px;
+}
+
+.toggle-radio > input:checked[value="Disallowed"] + label {
+	background-color: red;
+}
+
+.toggle-radio > input:checked[value="Allowed"] + label {
+	background-color: green;
+}

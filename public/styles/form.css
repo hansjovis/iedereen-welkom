@@ -19,3 +19,12 @@ input {
     flex-direction: column;
     gap: 0.2rem;
 }
+
+.toggle {
+    display: flex;
+    align-items: center;
+}
+
+.toggle * {
+    margin: 0.5rem;
+}

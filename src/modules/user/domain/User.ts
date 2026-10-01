@@ -1,11 +1,9 @@
-import { isSuperset } from "../../../common/set.js";
-
 import { AppID } from "../../apps/index.js";
 import { Authentication } from "../../auth/index.js";
 
 import { EmailAddress } from "./EmailAddress.js";
 import { UserID } from "./UserID.js";
-import { Authorization } from "./Authorization.js";
+import { PermissionSet } from "./Permission.js";
 
 export type UserProps = {
     id: UserID,
@@ -19,13 +17,14 @@ export class User {
     readonly email: EmailAddress;
 
     authentication: Authentication;
-    authorizations: Authorization[] = [];
+    private permissions: Map<string, PermissionSet>;
 
     constructor(props: UserProps) {
         this.id = props.id;
         this.userName = props.userName;
         this.email = props.email;
         this.authentication = Authentication.create();
+        this.permissions = new Map();
     }
 
     static create(email: EmailAddress, userName: string): User {
@@ -33,14 +32,19 @@ export class User {
         return new User({ id, userName, email });
     }
 
-    authorizationsSetFor(appId: AppID): Authorization[] {
-        return this.authorizations
-            .filter(authorization => authorization.isForApp(appId))
-            .filter(authorization => authorization.status !== undefined)
+    permissionsFor(appId: AppID): PermissionSet | undefined {
+        return this.permissions.get(appId.value);
     }
 
-    hasAuthorizationsSetFor(appId: AppID, authorizations: Authorization[]) {
-        const authorizedClaims = this.authorizationsSetFor(appId);
-        return isSuperset(authorizedClaims, authorizations);
+    hasPermissionsSetFor(appId: AppID, authorizations: PermissionSet): boolean {
+        return this.permissionsFor(appId)?.isSupersetOf(authorizations);
+    }
+
+    toJSON() {
+        return {
+            id: this.id,
+            email: this.email,
+            userName: this.userName,
+        };
     }
 }

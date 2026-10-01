@@ -17,4 +17,8 @@ export class Claim {
             desciption: this.description,
         };
     }
+
+    toString(): string {
+        return this.name;
+    }
 }

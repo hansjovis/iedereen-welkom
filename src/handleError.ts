@@ -1,8 +1,7 @@
 import { ExceptionFilter, Catch, ArgumentsHost, Logger } from "@nestjs/common";
-import { Request, Response } from "express";
+import { Response } from "express";
 
 import { HTTPException } from "./exceptions/HTTPException.js";
-import { HTTPStatus } from "./common/HTTPStatus.js";
 
 @Catch(HTTPException)
 export class HTTPExceptionHandler implements ExceptionFilter {
@@ -14,22 +13,10 @@ export class HTTPExceptionHandler implements ExceptionFilter {
 
         this.logger.error(`${exception.status}; ${exception}`);
 
-        // let redirectTo = request.path;
-        // if (exception.status.equals(HTTPStatus.Unauthorized)) {
-        //     redirectTo = "/auth/login";
-        // }
-
-        // if (response.headersSent === false) {
-        //     response.setHeader("Refresh", `2.5; url=${redirectTo}`);
-        // }
-
-        // request.flash("error", exception.message);
-
         response.status(exception.status.code);
         response.render("error", {
             status: exception.status.toJSON(),
             error: exception.message,
-            // redirectTo,
         });
     }
 }

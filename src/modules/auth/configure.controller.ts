@@ -1,15 +1,15 @@
 import { Controller, Get, Inject, Logger, Render, Session, Post, Body, Res } from "@nestjs/common";
 import { Response } from "express";
 
-import { UserService, UserRepository } from "../user/index.js";
+import { UserService, UserRepository, User } from "../user/index.js";
 import { HTTPStatus } from "../../common/index.js";
 
 import { TOTPConfiguration, PasswordConfiguration, Secret } from "./domain/index.js";
 import { Unauthorized } from "../../exceptions/Unauthorized.js";
 
-type RequestBody = {
-    password?: string,
-    totp?: string,
+class RequestBody {
+    password?: string;
+    totp?: string;
 }
 
 @Controller("/configure")
@@ -53,25 +53,7 @@ export class ConfigureController {
         if (user === undefined)
             throw new Unauthorized("You are not authorized to view this page.");
 
-        user.authentication.clear();
-
-        if (body.password) {
-            user.authentication.configure(
-                PasswordConfiguration.create(body.password)
-            );
-        }
-
-        if (body.totp) {
-            user.authentication.configure(
-                TOTPConfiguration.create({
-                    secret: new Secret(body.totp),
-                    issuer: "Hansjovis Auth",
-                    accountName: user.userName,
-                }),
-            );
-        }
-
-        this.userRepository.save(user);
+        this.configureAuthentication(user, body);
 
         const redirectUri: string = (session.redirect_to as string) ?? `/users/${encodeURIComponent(user.userName)}`;
 
@@ -80,5 +62,27 @@ export class ConfigureController {
         );
 
         response.redirect(HTTPStatus.SeeOther.code, redirectUri);
+    }
+
+    private configureAuthentication(user: User, config: { password?: string, totp?: string }) {
+        user.authentication.clear();
+
+        if (config.password) {
+            user.authentication.configure(
+                PasswordConfiguration.create(config.password)
+            );
+        }
+
+        if (config.totp) {
+            user.authentication.configure(
+                TOTPConfiguration.create({
+                    secret: new Secret(config.totp),
+                    issuer: "Hansjovis Auth",
+                    accountName: user.userName,
+                })
+            );
+        }
+
+        this.userRepository.save(user);
     }
 }

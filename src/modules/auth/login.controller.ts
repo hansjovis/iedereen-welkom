@@ -7,9 +7,12 @@ import { Page } from "../../PageMeta.js";
 import { UserService, EmailAddress } from "../user/index.js";
 
 import { parseEnteredCredentials } from "./domain/index.js";
+import { IsEmail, IsOptional } from "class-validator";
 
-type LoginQueryParams = {
-    email_address?: string,
+class LoginQueryParams {
+    @IsOptional()
+    @IsEmail()
+    email_address?: string;
 }
 
 type LoginRequestBody = {

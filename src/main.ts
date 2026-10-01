@@ -3,6 +3,7 @@ import { loadEnvFile } from "node:process";
 
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { NestFactory } from "@nestjs/core";
+import { ValidationPipe } from "@nestjs/common";
 
 import { static as expressStatic, NextFunction, Request, Response } from "express";
 import session from "express-session";
@@ -11,6 +12,7 @@ import hbs from "hbs";
 
 import { AppModule } from "./modules/app.module.js";
 import { HTTPExceptionHandler } from "./handleError.js";
+import { BadRequest } from "./exceptions/BadRequest.js";
 
 function setupViewEngine(app: NestExpressApplication) {
     app.setBaseViewsDir(join("views"));
@@ -37,6 +39,14 @@ async function bootstrap() {
 
     setupViewEngine(app);
 
+    app.useGlobalPipes(new ValidationPipe({ 
+        transform: true,
+        exceptionFactory(errors) {
+            console.error(errors[0]);
+            const messages = errors.flatMap(error => Object.values(error.constraints));
+            throw new BadRequest(messages.join(", "));
+        },
+    }));
     app.use(session({
         secret: process.env.SESSION_SECRET,
         resave: false,
@@ -58,6 +68,7 @@ async function bootstrap() {
                 "form",
                 "dismissable",
                 "layout",
+                "toggle",
             ],
             scripts: [
                 { id: "dismissable" }
