@@ -5,10 +5,10 @@ import { EmailModule, NoopEmailService } from "../email/index.js";
 import { AppsModule } from "../apps/apps.module.js";
 import { ScopeModule } from "../scopes/scope.module.js";
 
-import { LoginController } from "./login.controller.js";
-import { ConfigureController } from "./configure.controller.js";
-import { AuthenticationCodeService } from "./authentication-code.service.js";
-import { AuthorizeController } from "./authorize.controller.js";
+import { LoginController } from "./controllers/login.controller.js";
+import { ConfigureController } from "./controllers/configure.controller.js";
+import { AuthorizeController } from "./controllers/authorize.controller.js";
+import { AuthenticationCodeService } from "./services/authentication-code.service.js";
 
 @Module({
     providers: [

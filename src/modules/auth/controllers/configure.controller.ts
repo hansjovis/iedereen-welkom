@@ -1,11 +1,11 @@
 import { Controller, Get, Inject, Logger, Render, Session, Post, Body, Res } from "@nestjs/common";
 import { Response } from "express";
 
-import { UserService, UserRepository, User } from "../user/index.js";
-import { HTTPStatus } from "../../common/index.js";
+import { UserService, UserRepository, User } from "../../user/index.js";
+import { Unauthorized } from "../../../exceptions/Unauthorized.js";
+import { HTTPStatus } from "../../../common/index.js";
 
-import { TOTPConfiguration, PasswordConfiguration, Secret } from "./domain/index.js";
-import { Unauthorized } from "../../exceptions/Unauthorized.js";
+import { TOTPConfiguration, PasswordConfiguration, Secret } from "../domain/index.js";
 
 class RequestBody {
     password?: string;

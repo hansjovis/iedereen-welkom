@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { UserID } from "../user/index.js";
-import { AuthenticationCode } from "./domain/AuthenticationCode.js";
+import { UserID } from "../../user/index.js";
+import { AuthenticationCode } from "../domain/AuthenticationCode.js";
 
 @Injectable()
 export class AuthenticationCodeService {

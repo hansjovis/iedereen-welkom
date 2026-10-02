@@ -2,17 +2,17 @@ import { Body, Controller, Get, Inject, Logger, Post, Query, Res, Session } from
 import { IsIn, IsObject, IsOptional, IsString, IsUrl, IsUUID } from "class-validator";
 import { Response } from "express";
 
-import { BadRequest, NotFound, Unauthorized } from "../../exceptions/index.js";
-import { Page } from "../../PageMeta.js";
+import { BadRequest, NotFound, Unauthorized } from "../../../exceptions/index.js";
+import { Page } from "../../../PageMeta.js";
 
-import { UserService } from "../user/index.js";
-import { Permission, PermissionSet, toPermissionStatus } from "../user/domain/Permission.js";
-import { AppID, AppRepository } from "../apps/index.js";
-import { ClaimRepository, ScopeRepository } from "../scopes/index.js";
+import { UserService } from "../../user/index.js";
+import { Permission, PermissionSet, toPermissionStatus } from "../../user/domain/Permission.js";
+import { AppID, AppRepository } from "../../apps/index.js";
+import { ClaimRepository, ScopeRepository } from "../../scopes/index.js";
 
-import { AuthenticationCodeService } from "./authentication-code.service.js";
+import { AuthenticationCodeService } from "../services/authentication-code.service.js";
 
-class QueryParams {
+export class QueryParams {
     @IsIn(["code"])
     response_type: string;
     @IsUUID()
@@ -36,7 +36,7 @@ class QueryParams {
     }
 }
 
-class RequestBody {
+export class RequestBody {
     @IsUUID()
     client_id: string;
     @IsUrl({ require_tld: false })

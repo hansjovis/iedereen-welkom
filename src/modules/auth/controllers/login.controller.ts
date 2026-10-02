@@ -1,13 +1,13 @@
 import { Controller, Body, Post, Session, Get, Query, Res } from "@nestjs/common";
 import { Response as ExpressResponse } from "express";
-
-import { NotFound } from "../../exceptions/index.js";
-import { Page } from "../../PageMeta.js";
-
-import { UserService, EmailAddress } from "../user/index.js";
-
-import { parseEnteredCredentials } from "./domain/index.js";
 import { IsEmail, IsOptional } from "class-validator";
+
+import { NotFound } from "../../../exceptions/index.js";
+import { Page } from "../../../PageMeta.js";
+
+import { UserService, EmailAddress } from "../../user/index.js";
+
+import { parseEnteredCredentials } from "../domain/index.js";
 
 class LoginQueryParams {
     @IsOptional()
