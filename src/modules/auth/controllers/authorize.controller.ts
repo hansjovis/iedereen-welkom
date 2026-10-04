@@ -118,8 +118,11 @@ export class AuthorizeController {
         if (app.isValidRedirectUri(new URL(body.redirect_uri)) === false)
             throw new BadRequest(`${body.redirect_uri} is an invalid redirect URI.`);
 
-        const permissions = await this.parsePermissions(body.permissions);
-        user.setPermissions(app.id, permissions);
+        const permissionSet = await this.parsePermissions(body.permissions);
+        if (app.claims.isSupersetOf(permissionSet.claims) === false)
+            throw new BadRequest(`Could not set permissions for app ${app.name}.`);
+
+        user.setPermissions(app.id, permissionSet);
 
         const authorizationCode = this.authenticationCodeService.createFor(user.id);
         return response.redirect(`${body.redirect_uri}?code=${authorizationCode.secret}`);

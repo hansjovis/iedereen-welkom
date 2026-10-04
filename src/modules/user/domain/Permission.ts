@@ -1,40 +1,20 @@
+import { EqualsSet } from "../../../common/EqualsSet.js";
 import { Claim, Scope } from "../../scopes/index.js";
 
-export class PermissionSet implements ReadonlySetLike<Permission> {
-    constructor(
-        readonly permissions: Set<Permission>,
-    ) {}
-
-    get size(): number {
-        return this.permissions.size;
-    }
-
+export class PermissionSet extends EqualsSet<Permission> {
     static fromScopes(scopes: Scope[]): PermissionSet {
         const claims = scopes.flatMap(scope => scope.claims);
         const permissions = claims.map(claim => new Permission(claim));
-        return new PermissionSet(new Set(permissions));
+        return new PermissionSet(permissions);
     }
 
-    keys(): Iterator<Permission> {
-        return Iterator.from(this.permissions)
-    }
-
-    has(permission: Permission): boolean {
-        return [...this.permissions].some(it => it.equals(permission));
-    }
-
-    isSupersetOf(other: PermissionSet): boolean {
-        return this.permissions.isSubsetOf(other);
-    }
-
-    union(other: PermissionSet): PermissionSet {
-        const union = this.permissions.union(other);
-        return new PermissionSet(union);
+    get claims(): EqualsSet<Claim> {
+        return new EqualsSet([...this].map(permission => permission.claim));
     }
 
     toString(): string {
         return `{${
-            this.permissions.values()
+            this.values()
                 .map(val => val.toString())
                 .toArray()
                 .join(", ")
@@ -62,7 +42,7 @@ export class Permission {
         readonly status?: PermissionStatus,
     ) {}
 
-    equals(other: Permission): boolean {
+    equals(other: Permission): boolean {;
         return this.claim.equals(other.claim);
     }
 

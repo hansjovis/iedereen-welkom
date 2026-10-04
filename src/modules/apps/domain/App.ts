@@ -1,3 +1,4 @@
+import { EqualsSet } from "../../../common/EqualsSet.js";
 import { Scope, Claim } from "../../scopes/index.js";
 
 import { AppID } from "./AppID.js";
@@ -27,8 +28,8 @@ export class App {
         this.image = config.image;
     }
 
-    get claims(): Claim[] {
-        return [...new Set(this.scopes.flatMap(it => it.claims))];
+    get claims(): EqualsSet<Claim> {
+        return new EqualsSet(this.scopes.flatMap(it => it.claims));
     }
 
     static create(config: AppConfig): App {
@@ -50,9 +51,6 @@ export class App {
         return {
             id: this.id.toJSON(),
             name: this.name,
-            redirect_uri: this.redirectUri.toJSON(),
-            response_type: "code",
-            scopes: this.scopes.map(it => it.toJSON()),
             description: this.description,
             image: this.image ? this.image.toJSON() : undefined,
         }

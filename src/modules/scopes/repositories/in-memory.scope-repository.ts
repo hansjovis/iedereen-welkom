@@ -11,4 +11,8 @@ export class InMemoryScopeRepository implements ScopeRepository {
     async retrieveByIds(ids: string[]): Promise<Scope[]> {
         return this.scopes.filter(scope => ids.includes(scope.id));
     }
+
+    async add(scope: Scope): Promise<void> {
+        this.scopes.push(scope);
+    }
 }
