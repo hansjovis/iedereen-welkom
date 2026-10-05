@@ -13,9 +13,19 @@ describe("A PermissionSet", () => {
         ]);
         const set2 = new PermissionSet([
             new Permission(new Claim("a", "Claim A")),
-            new Permission(new Claim("b", "Claim B"))
         ]);
 
         expect(set1.isSupersetOf(set2)).toEqual(true);
+        expect(set2.isSubsetOf(set1)).toEqual(true);
+
+        expect(set2.isSupersetOf(set1)).toEqual(false);
+        expect(set1.isSubsetOf(set2)).toEqual(false);
+
+        const union = set1.union(set2);
+
+        expect(union.equals(new PermissionSet([
+            new Permission(new Claim("a", "Claim A")),
+            new Permission(new Claim("b", "Claim B"))
+        ]))).toBe(true);
     })
 });

@@ -221,7 +221,7 @@ describe("The authorization controller", () => {
         expect(response.lastRedirect).toMatch(`${body.redirect_uri}?code=`);
     });
 
-    it.skip("throws an error when trying to give an app permission to access claims it does not support.", async () => {
+    it("throws an error when trying to give an app permission to access claims it does not support.", async () => {
         const user = createUser();
         const app = createApp();
 

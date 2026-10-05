@@ -96,7 +96,7 @@ export class AuthorizeController {
             client: app.toJSON(),
             redirect_uri: query.redirect_uri,
             user: user.toJSON(),
-            permissions: (user.permissionsFor(app.id) ?? new Set()).union(permissions)
+            permissions: (user.permissionsFor(app.id) ?? new PermissionSet()).union(permissions)
         })
     }
 
