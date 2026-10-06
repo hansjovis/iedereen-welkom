@@ -28,7 +28,7 @@
 	outline: blue 2px;
 }
 
-.toggle-radio > input:checked[value="Disallowed"] + label {
+.toggle-radio > input:checked[value="Denied"] + label {
 	background-color: red;
 }
 

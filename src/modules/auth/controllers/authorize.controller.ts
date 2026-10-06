@@ -8,7 +8,7 @@ import { Page } from "../../../PageMeta.js";
 import { UserService } from "../../user/index.js";
 import { Permission, PermissionSet, toPermissionStatus } from "../../user/domain/Permission.js";
 import { AppID, AppRepository } from "../../apps/index.js";
-import { ClaimRepository, ScopeRepository } from "../../scopes/index.js";
+import { ScopeRepository } from "../../scopes/index.js";
 
 import { AuthenticationCodeService } from "../services/authentication-code.service.js";
 
@@ -42,7 +42,7 @@ export class RequestBody {
     @IsUrl({ require_tld: false })
     redirect_uri: string;
     @IsObject()
-    permissions: Record<string, "Allowed" | "Disallowed">;
+    permissions: Record<string, "Allowed" | "Denied">;
 }
 
 const page: Page = {
@@ -58,7 +58,6 @@ export class AuthorizeController {
     constructor(
         @Inject("AppRepository") private readonly apps: AppRepository,
         @Inject("ScopeRepository") private readonly scopes: ScopeRepository,
-        @Inject("ClaimRepository") private readonly claims: ClaimRepository,
         private readonly userService: UserService,
         private readonly authenticationCodeService: AuthenticationCodeService,
     ) {}
@@ -76,15 +75,17 @@ export class AuthorizeController {
             throw new BadRequest(`${query.redirect_uri} is an invalid redirect URI.`);
 
         if (user === undefined) {
-            // User hasn't logged in. Redirect to login page.
+            // User isn't logged in. Save current request and redirect to login page.
             session.redirect_to = `authorize?${new URLSearchParams(query.toJSON())}`;
             return response.redirect("login");
         }
 
-        const scopes = await this.scopes.retrieveByIds(query.scope.split(" "));
-        const permissions = PermissionSet.fromScopes(scopes);
+        const requestedPermissions = app.requestedPermissionsFor(query.scope.split(" "));
 
-        if (user.hasPermissionsSetFor(app.id, permissions)) {
+        if (requestedPermissions.size === 0)
+            throw new BadRequest(`Could not authorize permissions for scopes ${query.scope.split(" ")}.`);
+
+        if (user.hasPermissionsSetFor(app.id, requestedPermissions)) {
             // User has already permitted the app to access the asked-for claims, so we can redirect back to the client.
             const authorizationCode = this.authenticationCodeService.createFor(user.id);
             return response.redirect(`${query.redirect_uri}?code=${authorizationCode.secret}`);
@@ -96,8 +97,8 @@ export class AuthorizeController {
             client: app.toJSON(),
             redirect_uri: query.redirect_uri,
             user: user.toJSON(),
-            permissions: (user.permissionsFor(app.id) ?? new PermissionSet()).union(permissions)
-        })
+            requestedPermissions,
+        });
     }
 
     @Post("/")
@@ -119,7 +120,7 @@ export class AuthorizeController {
             throw new BadRequest(`${body.redirect_uri} is an invalid redirect URI.`);
 
         const permissionSet = await this.parsePermissions(body.permissions);
-        if (app.claims.isSupersetOf(permissionSet.claims) === false)
+        if (app.scopes.isSupersetOf(permissionSet.scopes) === false)
             throw new BadRequest(`Could not set permissions for app ${app.name}.`);
 
         user.setPermissions(app.id, permissionSet);
@@ -129,15 +130,17 @@ export class AuthorizeController {
     }
 
     private async parsePermissions(
-        permissionMap: { [claimId: string]: ("Allowed" | "Disallowed") }
+        permissionMap: { [scopeId: string]: ("Allowed" | "Denied") }
     ): Promise<PermissionSet> {
         const permissions: Set<Permission> = new Set();
 
-        for(const [claimId, statusString] of Object.entries(permissionMap)) {
-            const claim = await this.claims.retrieveById(claimId);
+        for(const [scopeId, statusString] of Object.entries(permissionMap)) {
+            const scope = await this.scopes.retrieveById(scopeId);
+            if (scope === undefined)
+                continue;
             permissions.add(
                 new Permission(
-                    claim,
+                    scope,
                     toPermissionStatus(statusString),
                 )
             );

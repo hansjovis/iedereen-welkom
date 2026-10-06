@@ -13,6 +13,10 @@ export class Scope {
         return this.claims.some(it => it.equals(claim));
     }
 
+    equals(other: Scope): boolean {
+        return this.id === other.id;
+    }
+
     toJSON() {
         return {
             id: this.id,

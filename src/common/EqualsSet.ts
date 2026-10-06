@@ -77,4 +77,10 @@ export class EqualsSet<Type extends Equatable<Type>> implements Equatable<Equals
         for (const item of items)
             this.add(item);
     }
+
+    map<Out extends Equatable<Out>>(
+        predicate: (t: Type, index: number, array: Type[]) => Out
+    ) {
+        return new EqualsSet(this.items.map(predicate));
+    }
 }

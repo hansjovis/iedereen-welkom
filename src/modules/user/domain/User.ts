@@ -4,6 +4,8 @@ import { Authentication } from "../../auth/index.js";
 import { EmailAddress } from "./EmailAddress.js";
 import { UserID } from "./UserID.js";
 import { PermissionSet } from "./Permission.js";
+import { RequestedPermission } from "modules/apps/domain/RequestedPermission.js";
+import { EqualsSet } from "common/EqualsSet.js";
 
 export type UserProps = {
     id: UserID,
@@ -40,8 +42,12 @@ export class User {
         return this.permissions.get(appId.value);
     }
 
-    hasPermissionsSetFor(appId: AppID, permissions: PermissionSet): boolean {
-        return this.permissionsFor(appId)?.isSupersetOf(permissions);
+    hasPermissionsSetFor(appId: AppID, requestedPermissions: EqualsSet<RequestedPermission>): boolean {
+        const appPermissions = this.permissions.get(appId.value);
+        if (appPermissions === undefined)
+            return false;
+        const requestedScopes = requestedPermissions.map(it => it.scope);
+        return appPermissions.scopes.isSupersetOf(requestedScopes);
     }
 
     toJSON() {

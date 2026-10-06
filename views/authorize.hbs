@@ -17,14 +17,25 @@
     </section>
     <input type="hidden" name="client_id" value="{{client.id}}">
     <input type="hidden" name="redirect_uri" value="{{redirect_uri}}">
-    {{#each permissions}}
+    {{#each requestedPermissions}}
     <fieldset>
-        <legend>{{claim.name}}</legend>
+        <legend>{{scope.name}}</legend>
+        <p>{{reason}}</p>
         <div class="toggle-radio" data-color="green">
-            <input type="radio" name="permissions.{{claim.id}}" id="permissions.{{claim.id}}.allow" value="Allowed">
-            <label for="permissions.{{claim.id}}.allow">Allow</label>
-            <input type="radio" name="permissions.{{claim.id}}" id="permissions.{{claim.id}}.disallow" value="Disallowed">
-            <label for="permissions.{{claim.id}}.disallow">Do not allow</label>
+            <input 
+                type="radio"
+                name="permissions.{{scope.id}}" 
+                id="permissions.{{scope.id}}.allow" 
+                value="Allowed"
+            >
+            <label for="permissions.{{scope.id}}.allow">Allow</label>
+            <input 
+                type="radio"
+                name="permissions.{{scope.id}}" 
+                id="permissions.{{scope.id}}.deny" 
+                value="Denied"
+            >
+            <label for="permissions.{{scope.id}}.deny">Deny</label>
         </div>
     </fieldset>
     {{/each}}

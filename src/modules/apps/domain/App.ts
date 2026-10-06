@@ -1,12 +1,13 @@
 import { EqualsSet } from "../../../common/EqualsSet.js";
-import { Scope, Claim } from "../../scopes/index.js";
+import { Scope } from "../../scopes/index.js";
 
 import { AppID } from "./AppID.js";
+import { RequestedPermission } from "./RequestedPermission.js";
 
 type AppConfig = {
     name: string,
     redirectUri: URL,
-    scopes: Scope[],
+    requestedPermissions: RequestedPermission[],
     description?: string,
     image?: URL,
 };
@@ -15,7 +16,7 @@ export class App {
     public readonly id: AppID;
     public name: string;
     public description: string;
-    public scopes: Scope[];
+    public requestedPermissions: RequestedPermission[];
     public image: URL;
     public redirectUri: URL;
     
@@ -24,12 +25,12 @@ export class App {
         this.redirectUri = config.redirectUri;
         this.name = config.name;
         this.description = config.description;
-        this.scopes = config.scopes;
+        this.requestedPermissions = config.requestedPermissions;
         this.image = config.image;
     }
 
-    get claims(): EqualsSet<Claim> {
-        return new EqualsSet(this.scopes.flatMap(it => it.claims));
+    get scopes(): EqualsSet<Scope> {
+        return new EqualsSet(this.requestedPermissions.map(it => it.scope));
     }
 
     static create(config: AppConfig): App {
@@ -44,7 +45,13 @@ export class App {
     }
 
     hasScopes(scopeIds: string[]) {
-        return this.scopes.every(it => scopeIds.includes(it.id));
+        return this.requestedPermissions.every(it => scopeIds.includes(it.scope.id));
+    }
+
+    requestedPermissionsFor(scopesIds: string[]): EqualsSet<RequestedPermission> {
+        return new EqualsSet(
+            this.requestedPermissions.filter(it => scopesIds.includes(it.scope.id))
+        );
     }
 
     toJSON() {

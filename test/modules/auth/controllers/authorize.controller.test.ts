@@ -1,16 +1,17 @@
 import { beforeEach, describe, it } from "node:test";
+import type { Response } from "express";
 import { expect } from "expect";
 
 import { AuthorizeController, QueryParams, RequestBody } from "../../../../dist/modules/auth/controllers/authorize.controller.js";
 import { AuthenticationCodeService } from "../../../../dist/modules/auth/services/authentication-code.service.js";
 import { App, type AppRepository, InMemoryAppRepository } from "../../../../dist/modules/apps/index.js";
 import { EmailAddress, InMemoryUserRepository, User, type UserRepository, UserService } from "../../../../dist/modules/user/index.js";
-import { Claim, type ClaimRepository, InMemoryClaimRepository, InMemoryScopeRepository, OpenID, Scope, type ScopeRepository } from "../../../../dist/modules/scopes/index.js";
+import { Claim, InMemoryScopeRepository, OpenID, Scope, type ScopeRepository } from "../../../../dist/modules/scopes/index.js";
 import type { EmailService } from "../../../../dist/modules/email/email.service.js";
+import { Permission, PermissionSet, PermissionStatus } from "../../../../dist/modules/user/domain/Permission.js";
+import { RequestedPermission } from "../../../../dist/modules/apps/domain/RequestedPermission.js";
 
 import { MockEmailService } from "../../../_mocks/mock.email-service.ts";
-import type { Response } from "express";
-import { Permission, PermissionSet, PermissionStatus } from "../../../../dist/modules/user/domain/Permission.js";
 
 class MockResponse {
     public lastRender?: { view: string, options: unknown };
@@ -29,7 +30,6 @@ describe("The authorization controller", () => {
     let appRepository: AppRepository;
     let userRepository: UserRepository;
     let scopeRepository: ScopeRepository;
-    let claimRepository: ClaimRepository;
 
     let userService: UserService;
     let emailService: EmailService;
@@ -41,7 +41,9 @@ describe("The authorization controller", () => {
         const app = App.create({
             name: "App for Testing Purposes",
             redirectUri: new URL("http://client.example.com/login"),
-            scopes: [OpenID]
+            requestedPermissions: [
+                new RequestedPermission(OpenID, "For securely logging in.", true)
+            ]
         });
         appRepository.create(app);
         return app;
@@ -67,7 +69,7 @@ describe("The authorization controller", () => {
 
     function createRequestBody(
         app: App, 
-        permissions: Record<string, "Allowed" | "Disallowed">
+        permissions: Record<string, "Allowed" | "Denied">
     ): RequestBody {
         const body = new RequestBody();
         body.client_id = app.id.value;
@@ -80,7 +82,6 @@ describe("The authorization controller", () => {
         appRepository = new InMemoryAppRepository();
         userRepository = new InMemoryUserRepository();
         scopeRepository = new InMemoryScopeRepository();
-        claimRepository = new InMemoryClaimRepository();
         
         emailService = new MockEmailService();
         userService = new UserService(
@@ -92,7 +93,6 @@ describe("The authorization controller", () => {
         controller = new AuthorizeController(
             appRepository,
             scopeRepository,
-            claimRepository,
             userService,
             authenticationCodeService
         );
@@ -152,10 +152,8 @@ describe("The authorization controller", () => {
         };
 
         // Set all OpenID permissions for the app.
-        const permissions = OpenID.claims.map(
-            claim => new Permission(claim, PermissionStatus.Allowed)
-        );
-        user.setPermissions(app.id, new PermissionSet(new Set(permissions)));
+        const permissions = [new Permission(OpenID, PermissionStatus.Allowed)];
+        user.setPermissions(app.id, new PermissionSet(permissions));
 
         const response = new MockResponse();
 
@@ -182,10 +180,8 @@ describe("The authorization controller", () => {
         };
 
         // Set all OpenID permissions for the app.
-        const permissions = OpenID.claims.map(
-            claim => new Permission(claim, PermissionStatus.Allowed)
-        );
-        user.setPermissions(app.id, new PermissionSet(new Set(permissions)));
+        const permissions = [new Permission(OpenID, PermissionStatus.Allowed)];
+        user.setPermissions(app.id, new PermissionSet(permissions));
 
         const response = new MockResponse();
 
@@ -200,12 +196,8 @@ describe("The authorization controller", () => {
         const user = createUser();
         const app = createApp();
 
-        const permissions: Record<string, "Allowed" | "Disallowed"> = {
-            iss: "Allowed",
-            sub: "Allowed",
-            aud: "Allowed", 
-            exp: "Allowed", 
-            iat: "Allowed",
+        const permissions: Record<string, "Allowed" | "Denied"> = {
+            openId: "Allowed",
         };
 
         const body = createRequestBody(app, permissions);
@@ -227,13 +219,9 @@ describe("The authorization controller", () => {
 
         scopeRepository.add(new Scope("age", "Your age", [new Claim("age", "Your age")]));
 
-        const permissions: Record<string, "Allowed" | "Disallowed"> = {
-            iss: "Allowed",
-            sub: "Allowed",
-            aud: "Allowed", 
-            exp: "Allowed", 
-            iat: "Allowed",
-            email: "Disallowed", // Not a permission that the app needs.
+        const permissions: Record<string, "Allowed" | "Denied"> = {
+            openId: "Allowed",
+            email: "Denied", // Not a permission that the app needs.
         };
 
         const body = createRequestBody(app, permissions);

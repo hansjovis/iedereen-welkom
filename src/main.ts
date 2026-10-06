@@ -44,7 +44,6 @@ async function bootstrap() {
     app.useGlobalPipes(new ValidationPipe({ 
         transform: true,
         exceptionFactory(errors) {
-            console.error(errors[0]);
             const messages = errors.flatMap(error => Object.values(error.constraints));
             throw new BadRequest(messages.join(", "));
         },

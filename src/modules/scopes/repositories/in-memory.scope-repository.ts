@@ -8,6 +8,10 @@ export class InMemoryScopeRepository implements ScopeRepository {
         Email,
     ];
 
+    async retrieveById(scopeId: string): Promise<Scope> {
+        return this.scopes.find(scope => scope.id === scopeId);
+    }
+
     async retrieveByIds(ids: string[]): Promise<Scope[]> {
         return this.scopes.filter(scope => ids.includes(scope.id));
     }

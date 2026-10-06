@@ -33,7 +33,7 @@ export class UserService {
         }
         user.authentication.clear();
         credentials.forEach(it => user.authentication.configure(it));
-        this.logger.log(`Activated user with id ${userID}.`);
+        this.logger.log(`Activated user with email ${user.email}.`);
         return user;
     }
 

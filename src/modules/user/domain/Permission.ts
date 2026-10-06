@@ -1,15 +1,14 @@
 import { EqualsSet } from "../../../common/EqualsSet.js";
-import { Claim, Scope } from "../../scopes/index.js";
+import { Scope } from "../../scopes/index.js";
 
 export class PermissionSet extends EqualsSet<Permission> {
     static fromScopes(scopes: Scope[]): PermissionSet {
-        const claims = scopes.flatMap(scope => scope.claims);
-        const permissions = claims.map(claim => new Permission(claim));
+        const permissions = scopes.map(scope => new Permission(scope));
         return new PermissionSet(permissions);
     }
 
-    get claims(): EqualsSet<Claim> {
-        return new EqualsSet([...this].map(permission => permission.claim));
+    get scopes(): EqualsSet<Scope> {
+        return new EqualsSet([...this].map(it => it.scope));
     }
 
     toString(): string {
@@ -24,29 +23,32 @@ export class PermissionSet extends EqualsSet<Permission> {
 
 export enum PermissionStatus {
     Allowed = "Allowed",
-    Disallowed = "Disallowed",
+    Denied = "Denied",
 }
 
 export function toPermissionStatus(status: string): PermissionStatus {
     if (status === PermissionStatus.Allowed) {
         return PermissionStatus.Allowed;
-    } else if (status === PermissionStatus.Disallowed) {
-        return PermissionStatus.Disallowed;
+    } else if (status === PermissionStatus.Denied) {
+        return PermissionStatus.Denied;
     }
-    throw new Error(`${status} is not a valid permission status. Should be one of "Allowed" or "Disallowed".`);
+    throw new Error(`"${status}" is not a valid permission status. Should be one of "Allowed" or "Denied".`);
 }
 
 export class Permission {
     constructor(
-        readonly claim: Claim,
+        readonly scope: Scope,
         readonly status?: PermissionStatus,
-    ) {}
+    ) {
+        if (scope === undefined)
+            throw new Error("Scope cannot be undefined.");
+    }
 
     equals(other: Permission): boolean {;
-        return this.claim.equals(other.claim);
+        return this.scope.equals(other.scope);
     }
 
     toString(): string {
-        return `(${this.claim} = ${this.status})`;
+        return `(${this.scope} = ${this.status})`;
     }
 }
