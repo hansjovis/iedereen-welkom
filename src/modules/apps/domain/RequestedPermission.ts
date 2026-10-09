@@ -1,4 +1,4 @@
-import { Equatable } from "common/Equatable.js";
+import { Equatable } from "../../../common/Equatable.js";
 import { Claim, Scope } from "../../scopes/index.js";
 
 export class RequestedPermission implements Equatable<RequestedPermission> {
